@@ -6,6 +6,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Import;
 
+import com.upgrad.FoodOrderingApp.api.config.AppConfig;
+import com.upgrad.FoodOrderingApp.api.config.SwaggerConfiguration;
 import com.upgrad.FoodOrderingApp.service.ServiceConfiguration;
 
 /**
@@ -14,7 +16,7 @@ import com.upgrad.FoodOrderingApp.service.ServiceConfiguration;
  */
 @SpringBootApplication
 @Import(ServiceConfiguration.class)
-@ComponentScan("com.upgrad.FoodOrderingApp.controller")
+@ComponentScan({"com.upgrad.FoodOrderingApp.api"})
 public class FoodOrderingAppApiApplication {
     public static void main(String[] args) {
         SpringApplication.run(FoodOrderingAppApiApplication.class, args);
