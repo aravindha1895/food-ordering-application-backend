@@ -9,6 +9,7 @@ import org.springframework.context.annotation.Configuration;
  */
 @Configuration
 @ComponentScan("com.upgrad.FoodOrderingApp.service")
-@EntityScan("com.upgrad.FoodOrderingApp.service.entity")
+@ComponentScan("com.upgrad.FoodOrderingApp.dao")
+@EntityScan("com.upgrad.FoodOrderingApp.entity")
 public class ServiceConfiguration {
 }
