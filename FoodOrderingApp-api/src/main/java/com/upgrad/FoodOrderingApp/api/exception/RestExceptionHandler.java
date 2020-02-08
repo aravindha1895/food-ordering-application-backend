@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 
 import com.upgrad.FoodOrderingApp.api.model.ErrorResponse;
+import com.upgrad.FoodOrderingApp.service.exception.AuthenticationFailedException;
 import com.upgrad.FoodOrderingApp.service.exception.AuthorizationFailedException;
 import com.upgrad.FoodOrderingApp.service.exception.CouponNotFoundException;
 import com.upgrad.FoodOrderingApp.service.exception.SignUpRestrictedException;
@@ -34,5 +35,10 @@ public class RestExceptionHandler {
 		return new ResponseEntity<ErrorResponse>(new ErrorResponse().code(exe.getCode()).message(exe.getErrorMessage()),
 				HttpStatus.CONFLICT);
 	}
-
+	@ExceptionHandler(AuthenticationFailedException.class)
+	public ResponseEntity<ErrorResponse> authenticationFailedException(AuthenticationFailedException exe,
+			WebRequest request) {
+		return new ResponseEntity<ErrorResponse>(new ErrorResponse().code(exe.getCode()).message(exe.getErrorMessage()),
+				HttpStatus.UNAUTHORIZED);
+	}
 }

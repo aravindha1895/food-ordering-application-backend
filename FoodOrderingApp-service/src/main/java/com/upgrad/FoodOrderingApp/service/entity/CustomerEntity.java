@@ -10,7 +10,9 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
 
-@NamedQueries({ @NamedQuery(name = "customerByPhoneNumber", query = "select c from CustomerEntity c where c.contactNumber = :contact_number") })
+@NamedQueries({
+		@NamedQuery(name = "customerByPhoneNumber", query = "select c from CustomerEntity c where c.contactNumber = :contact_number"),
+		@NamedQuery(name = "authenticateUserQuery", query = "select c from CustomerEntity c where c.contactNumber= :contactNumber and c.password= :password") })
 @Entity
 @Table(name = "customer")
 public class CustomerEntity implements Serializable {
