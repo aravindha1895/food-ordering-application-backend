@@ -13,6 +13,7 @@ import com.upgrad.FoodOrderingApp.service.entity.CustomerEntity;
 import com.upgrad.FoodOrderingApp.service.exception.AuthenticationFailedException;
 import com.upgrad.FoodOrderingApp.service.exception.AuthorizationFailedException;
 import com.upgrad.FoodOrderingApp.service.exception.SignUpRestrictedException;
+import com.upgrad.FoodOrderingApp.service.exception.UpdateCustomerException;
 
 @Service
 public class CustomerService {
@@ -99,6 +100,19 @@ public class CustomerService {
 		return customerAuthTokenEntity;
 	}
 
+	@Transactional(propagation = Propagation.REQUIRED)
+	public CustomerEntity updateCustomer(CustomerEntity updatedEntity, String accessToken) throws UpdateCustomerException {
+		if(updatedEntity.getFirstName().trim().length()==0)
+			throw new UpdateCustomerException("UCR-002","First name field should not be empty");
+		CustomerAuthTokenEntity customerAuthTokenEntity = null;
+		customerAuthTokenEntity = customerDAO.getUserAuthToken(accessToken);
+		CustomerEntity existingRecord= customerAuthTokenEntity.getUser();
+		existingRecord.setFirstName(updatedEntity.getFirstName());
+		existingRecord.setLastName(updatedEntity.getLastName());
+		customerDAO.updateCustomerDetails(existingRecord);
+		return existingRecord;
+	}
+	
 	private boolean isPhoneNumberExist(CustomerEntity customer) throws SignUpRestrictedException {
 		CustomerEntity customerEntity = customerDAO.getUserByPhoneNumber(customer.getContactNumber());
 		if (customerEntity != null) {

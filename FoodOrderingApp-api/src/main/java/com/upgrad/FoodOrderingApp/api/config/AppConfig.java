@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.util.PathMatcher;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
@@ -17,11 +18,12 @@ public class AppConfig extends WebMvcConfigurerAdapter {
 	@Autowired
 	AuthenticationInterceptor authenticationInterceptor;
 
-	String[] pathPatternToIntercept = { "/order/coupon/{coupon_name}", "/order", "/customer/logout" };
+	String[] pathPatternToIntercept = { "/order/coupon/{coupon_name}", "/order", "/customer/logout","/customer" };
 	List<String> pathsToIntercept = new ArrayList<String>(Arrays.asList(pathPatternToIntercept));
 
 	@Override
 	public void addInterceptors(InterceptorRegistry registry) {
+		// PathMatcher pathmatcher;
 		registry.addInterceptor(authenticationInterceptor).addPathPatterns(pathsToIntercept);
 	}
 }

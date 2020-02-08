@@ -11,6 +11,7 @@ import com.upgrad.FoodOrderingApp.service.exception.AuthenticationFailedExceptio
 import com.upgrad.FoodOrderingApp.service.exception.AuthorizationFailedException;
 import com.upgrad.FoodOrderingApp.service.exception.CouponNotFoundException;
 import com.upgrad.FoodOrderingApp.service.exception.SignUpRestrictedException;
+import com.upgrad.FoodOrderingApp.service.exception.UpdateCustomerException;
 
 @ControllerAdvice
 public class RestExceptionHandler {
@@ -37,6 +38,12 @@ public class RestExceptionHandler {
 	}
 	@ExceptionHandler(AuthenticationFailedException.class)
 	public ResponseEntity<ErrorResponse> authenticationFailedException(AuthenticationFailedException exe,
+			WebRequest request) {
+		return new ResponseEntity<ErrorResponse>(new ErrorResponse().code(exe.getCode()).message(exe.getErrorMessage()),
+				HttpStatus.UNAUTHORIZED);
+	}
+	@ExceptionHandler(UpdateCustomerException.class)
+	public ResponseEntity<ErrorResponse> updateCustomerFailedFailedException(UpdateCustomerException exe,
 			WebRequest request) {
 		return new ResponseEntity<ErrorResponse>(new ErrorResponse().code(exe.getCode()).message(exe.getErrorMessage()),
 				HttpStatus.UNAUTHORIZED);
