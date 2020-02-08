@@ -5,8 +5,8 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.upgrad.FoodOrderingApp.dao.PaymentDAO;
-import com.upgrad.FoodOrderingApp.entity.PaymentEntity;
+import com.upgrad.FoodOrderingApp.service.dao.PaymentDAO;
+import com.upgrad.FoodOrderingApp.service.entity.PaymentEntity;
 
 @Service
 public class PaymentService {

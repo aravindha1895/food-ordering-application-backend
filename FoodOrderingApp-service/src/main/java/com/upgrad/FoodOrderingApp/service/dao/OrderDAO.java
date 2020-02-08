@@ -1,4 +1,4 @@
-package com.upgrad.FoodOrderingApp.dao;
+package com.upgrad.FoodOrderingApp.service.dao;
 
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
@@ -6,7 +6,7 @@ import javax.persistence.PersistenceContext;
 
 import org.springframework.stereotype.Repository;
 
-import com.upgrad.FoodOrderingApp.entity.CouponEntity;
+import com.upgrad.FoodOrderingApp.service.entity.CouponEntity;
 
 @Repository
 public class OrderDAO {

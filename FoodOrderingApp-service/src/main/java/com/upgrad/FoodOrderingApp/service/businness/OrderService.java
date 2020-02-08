@@ -3,8 +3,8 @@ package com.upgrad.FoodOrderingApp.service.businness;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.upgrad.FoodOrderingApp.dao.OrderDAO;
-import com.upgrad.FoodOrderingApp.entity.CouponEntity;
+import com.upgrad.FoodOrderingApp.service.dao.OrderDAO;
+import com.upgrad.FoodOrderingApp.service.entity.CouponEntity;
 import com.upgrad.FoodOrderingApp.service.exception.CouponNotFoundException;
 
 @Service

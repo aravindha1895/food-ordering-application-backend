@@ -1,4 +1,4 @@
-package com.upgrad.FoodOrderingApp;
+package com.upgrad.FoodOrderingApp.api.interceptor;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;

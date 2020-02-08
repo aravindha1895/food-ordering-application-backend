@@ -1,12 +1,12 @@
 package com.upgrad.FoodOrderingApp.api.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.upgrad.FoodOrderingApp.api.interceptor.service.businness.CategoryService;
+import com.upgrad.FoodOrderingApp.api.interceptor.service.businness.CustomerService;
+import com.upgrad.FoodOrderingApp.api.interceptor.service.businness.ItemService;
+import com.upgrad.FoodOrderingApp.api.interceptor.service.businness.RestaurantService;
 import com.upgrad.FoodOrderingApp.api.model.RestaurantList;
 import com.upgrad.FoodOrderingApp.api.model.RestaurantListResponse;
-import com.upgrad.FoodOrderingApp.service.businness.CategoryService;
-import com.upgrad.FoodOrderingApp.service.businness.CustomerService;
-import com.upgrad.FoodOrderingApp.service.businness.ItemService;
-import com.upgrad.FoodOrderingApp.service.businness.RestaurantService;
 import com.upgrad.FoodOrderingApp.service.exception.AuthorizationFailedException;
 import com.upgrad.FoodOrderingApp.service.exception.CategoryNotFoundException;
 import com.upgrad.FoodOrderingApp.service.exception.InvalidRatingException;
@@ -24,7 +24,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.util.Collections;
 import java.util.UUID;
 
-import static com.upgrad.FoodOrderingApp.service.common.ItemType.NON_VEG;
+import static com.upgrad.FoodOrderingApp.api.interceptor.service.common.ItemType.NON_VEG;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;

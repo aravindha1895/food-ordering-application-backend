@@ -1,11 +1,11 @@
 package com.upgrad.FoodOrderingApp.api.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.upgrad.FoodOrderingApp.api.interceptor.service.businness.ItemService;
+import com.upgrad.FoodOrderingApp.api.interceptor.service.businness.RestaurantService;
+import com.upgrad.FoodOrderingApp.api.interceptor.service.entity.ItemEntity;
+import com.upgrad.FoodOrderingApp.api.interceptor.service.entity.RestaurantEntity;
 import com.upgrad.FoodOrderingApp.api.model.ItemListResponse;
-import com.upgrad.FoodOrderingApp.service.businness.ItemService;
-import com.upgrad.FoodOrderingApp.service.businness.RestaurantService;
-import com.upgrad.FoodOrderingApp.service.entity.ItemEntity;
-import com.upgrad.FoodOrderingApp.service.entity.RestaurantEntity;
 import com.upgrad.FoodOrderingApp.service.exception.RestaurantNotFoundException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -20,7 +20,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.util.Collections;
 import java.util.UUID;
 
-import static com.upgrad.FoodOrderingApp.service.common.ItemType.NON_VEG;
+import static com.upgrad.FoodOrderingApp.api.interceptor.service.common.ItemType.NON_VEG;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;

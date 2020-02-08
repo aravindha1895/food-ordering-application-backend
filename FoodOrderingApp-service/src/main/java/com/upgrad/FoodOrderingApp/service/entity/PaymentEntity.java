@@ -1,4 +1,4 @@
-package com.upgrad.FoodOrderingApp.entity;
+package com.upgrad.FoodOrderingApp.service.entity;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;

@@ -1,4 +1,4 @@
-package com.upgrad.FoodOrderingApp.dao;
+package com.upgrad.FoodOrderingApp.service.dao;
 
 import java.util.List;
 
@@ -7,7 +7,7 @@ import javax.persistence.PersistenceContext;
 
 import org.springframework.stereotype.Repository;
 
-import com.upgrad.FoodOrderingApp.entity.PaymentEntity;
+import com.upgrad.FoodOrderingApp.service.entity.PaymentEntity;
 
 @Repository
 public class PaymentDAO {

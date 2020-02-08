@@ -15,8 +15,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.upgrad.FoodOrderingApp.api.model.CouponDetailsResponse;
 import com.upgrad.FoodOrderingApp.api.model.SaveOrderRequest;
 import com.upgrad.FoodOrderingApp.api.model.SaveOrderResponse;
-import com.upgrad.FoodOrderingApp.entity.CouponEntity;
 import com.upgrad.FoodOrderingApp.service.businness.OrderService;
+import com.upgrad.FoodOrderingApp.service.entity.CouponEntity;
 import com.upgrad.FoodOrderingApp.service.exception.CouponNotFoundException;
 
 @RestController

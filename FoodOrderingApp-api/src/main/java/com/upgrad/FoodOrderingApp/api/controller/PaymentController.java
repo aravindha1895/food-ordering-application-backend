@@ -13,8 +13,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.upgrad.FoodOrderingApp.api.model.PaymentListResponse;
 import com.upgrad.FoodOrderingApp.api.model.PaymentResponse;
-import com.upgrad.FoodOrderingApp.entity.PaymentEntity;
 import com.upgrad.FoodOrderingApp.service.businness.PaymentService;
+import com.upgrad.FoodOrderingApp.service.entity.PaymentEntity;
 
 @RestController
 public class PaymentController {
