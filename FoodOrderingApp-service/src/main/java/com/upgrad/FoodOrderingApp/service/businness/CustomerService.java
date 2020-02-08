@@ -1,6 +1,8 @@
 package com.upgrad.FoodOrderingApp.service.businness;
 
 import java.time.ZonedDateTime;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -36,7 +38,7 @@ public class CustomerService {
 			throw new SignUpRestrictedException("SGR-002", "Invalid email-id format!");
 		if (!isValidPhoneNumber(customer))
 			throw new SignUpRestrictedException("SGR-003", "Invalid contact number!");
-		if (!isValidPassword(customer))
+		if (!isValidPassword(customer.getPassword()))
 			throw new SignUpRestrictedException("SGR-004", "Weak password!");
 		/* Encrypt password */
 		String[] encryptedText = cryptographyProvider.encrypt(customer.getPassword());
@@ -115,6 +117,8 @@ public class CustomerService {
 	
 	@Transactional(propagation = Propagation.REQUIRED)
 	public CustomerEntity updateCustomerPassword(String oldPassword, String newPassword, String accessToken) throws UpdateCustomerException {
+		if(!isValidPassword(newPassword))
+			throw new UpdateCustomerException("UCR-001","Weak password!");
 		CustomerAuthTokenEntity customerAuthTokenEntity = null;
 		customerAuthTokenEntity = customerDAO.getUserAuthToken(accessToken);
 		CustomerEntity existingRecord= customerAuthTokenEntity.getUser();
@@ -144,15 +148,21 @@ public class CustomerService {
 	}
 
 	private boolean isValidEmailID(CustomerEntity customer) {
-		return true;
+		Pattern pattern = Pattern.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,6}$", Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern .matcher(customer.getEmail());
+        return matcher.find();
 	}
 
 	private boolean isValidPhoneNumber(CustomerEntity customer) {
-		return true;
+		Pattern pattern = Pattern.compile("^[1-9]+\\d{9}$");
+		Matcher matcher = pattern.matcher(customer.getContactNumber());
+		return matcher.matches();
 	}
 
-	private boolean isValidPassword(CustomerEntity customer) {
-		return true;
+	private boolean isValidPassword(String password) {
+		Pattern p1= Pattern.compile("^(?=.*\\d)(?=.*[A-Z])(?=.*\\W).*$");
+		Matcher matcher=p1.matcher(password);
+		return password.length()>=8 && matcher.matches();
 	}
 
 	public void checkCustomerEntityValidity(String accessToken) throws AuthorizationFailedException {
