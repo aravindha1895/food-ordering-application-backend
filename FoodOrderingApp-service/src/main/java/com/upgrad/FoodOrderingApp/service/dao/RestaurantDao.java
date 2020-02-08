@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import java.util.List;
 
@@ -16,6 +17,10 @@ public class RestaurantDao {
 
     public List<RestaurantEntity> getAllRestaurants() {
         return entityManager.createNamedQuery("allRestaurants", RestaurantEntity.class).getResultList();
+    }
+
+    public List<RestaurantEntity> getAllRestaurantsByName(String restName) {
+        return  entityManager.createNamedQuery("restbyName", RestaurantEntity.class).setParameter("restaurant_name", "%" + restName + "%").getResultList();
     }
 
 }
