@@ -39,6 +39,15 @@ public class CutomerDAO {
 		}
 	}
 
+	public CustomerAuthTokenEntity getCustomerAuthEntityTokenByUUID(final String UUID) {
+		try {
+			return entityManager.createNamedQuery("userAuthTokenByUUID", CustomerAuthTokenEntity.class)
+					.setParameter("uuid", UUID).getSingleResult();
+		} catch (NoResultException nre) {
+			return null;
+		}
+	}
+
 	public CustomerEntity authenticateUser(final String phone, final String password) {
 		try {
 			return entityManager.createNamedQuery("authenticateUserQuery", CustomerEntity.class)
@@ -52,7 +61,7 @@ public class CutomerDAO {
 		entityManager.persist(customerAuthTokenEntity);
 		return customerAuthTokenEntity;
 	}
-	
+
 	public CustomerAuthTokenEntity updateUserLogOut(final CustomerAuthTokenEntity customerAuthTokenEntity) {
 		try {
 			return entityManager.merge(customerAuthTokenEntity);
@@ -60,5 +69,13 @@ public class CutomerDAO {
 			return null;
 		}
 	}
-	
+
+	public CustomerAuthTokenEntity updateLoginInfo(final CustomerAuthTokenEntity userAuthTokenEntity) {
+		try {
+			return entityManager.merge(userAuthTokenEntity);
+		} catch (NoResultException nre) {
+			return null;
+		}
+	}
+
 }

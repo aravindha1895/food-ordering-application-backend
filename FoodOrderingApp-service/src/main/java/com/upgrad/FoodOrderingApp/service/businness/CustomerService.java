@@ -48,7 +48,8 @@ public class CustomerService {
 	@Transactional(propagation = Propagation.REQUIRED)
 	public CustomerAuthTokenEntity authenticate(final String phone, final String password)
 			throws AuthenticationFailedException {
-		CustomerAuthTokenEntity CustomerAuthTokenEntity = null;
+		boolean isDataAlreadyExists = false;
+		CustomerAuthTokenEntity customerAuthTokenEntity = null;
 		CustomerEntity customerEntity = customerDAO.getUserByPhoneNumber(phone);
 		// check contact number exist
 		if (customerEntity == null) {
@@ -64,20 +65,27 @@ public class CustomerService {
 			String uuid = customerEntity.getUuid();
 			// Geneate authention token
 			JwtTokenProvider jwtTokenProvider = new JwtTokenProvider(encryptedPassword);
-			CustomerAuthTokenEntity = new CustomerAuthTokenEntity();
-			CustomerAuthTokenEntity.setUser(customerEntity);
+			customerAuthTokenEntity = customerDAO.getCustomerAuthEntityTokenByUUID(customerEntity.getUuid());
+			if (customerAuthTokenEntity != null) {
+				isDataAlreadyExists = true;
+			}
+			customerAuthTokenEntity.setUser(customerEntity);
 			final ZonedDateTime now = ZonedDateTime.now();
 			final ZonedDateTime expiresAt = now.plusHours(8);
-			CustomerAuthTokenEntity
+			customerAuthTokenEntity
 					.setAccessToken(jwtTokenProvider.generateToken(customerEntity.getUuid(), now, expiresAt));
-			CustomerAuthTokenEntity.setLoginAt(now);
-			CustomerAuthTokenEntity.setExpiresAt(expiresAt);
-			CustomerAuthTokenEntity.setUuid(customerEntity.getUuid());
-			customerDAO.createAuthToken(CustomerAuthTokenEntity);
+			customerAuthTokenEntity.setLoginAt(now);
+			customerAuthTokenEntity.setExpiresAt(expiresAt);
+			customerAuthTokenEntity.setUuid(customerEntity.getUuid());
+			customerAuthTokenEntity.setLogoutAt(null);
+			if (isDataAlreadyExists)
+				customerDAO.createAuthToken(customerAuthTokenEntity);
+			else
+				customerDAO.updateLoginInfo(customerAuthTokenEntity);
 		} else {
 			throw new AuthenticationFailedException("ATH-002", "Invalid Credentials");
 		}
-		return CustomerAuthTokenEntity;
+		return customerAuthTokenEntity;
 	}
 
 	@Transactional(propagation = Propagation.REQUIRED)
