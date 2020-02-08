@@ -91,22 +91,11 @@ public class CustomerService {
 	@Transactional(propagation = Propagation.REQUIRED)
 	public CustomerAuthTokenEntity signOutService(String accessToken) throws AuthorizationFailedException {
 		CustomerAuthTokenEntity customerAuthTokenEntity = null;
-		// check user sign in or not
+		// check interceptor for validity check
 		customerAuthTokenEntity = customerDAO.getUserAuthToken(accessToken);
-		if (customerAuthTokenEntity != null) {
-			if (customerAuthTokenEntity.getLogoutAt() != null)
-				throw new AuthorizationFailedException("ATHR-002",
-						"Customer is logged out. Log in again to access this endpoint.");
-			else if (customerAuthTokenEntity.getExpiresAt().isBefore(ZonedDateTime.now()))
-				throw new AuthorizationFailedException("ATHR-003",
-						"Your session is expired. Log in again to access this endpoint.");
-			final ZonedDateTime now = ZonedDateTime.now();
-			customerAuthTokenEntity.setLogoutAt(now);
-			customerAuthTokenEntity = customerDAO.updateUserLogOut(customerAuthTokenEntity);
-		} else {
-			// if user is not sign in then throws exception
-			throw new AuthorizationFailedException("ATHR-001", "Customer is not Logged in.");
-		}
+		final ZonedDateTime now = ZonedDateTime.now();
+		customerAuthTokenEntity.setLogoutAt(now);
+		customerAuthTokenEntity = customerDAO.updateUserLogOut(customerAuthTokenEntity);
 		return customerAuthTokenEntity;
 	}
 
@@ -138,4 +127,21 @@ public class CustomerService {
 		return true;
 	}
 
+	public void checkCustomerEntityValidity(String accessToken) throws AuthorizationFailedException {
+		CustomerAuthTokenEntity customerAuthTokenEntity = null;
+		// check user sign in or not
+		customerAuthTokenEntity = customerDAO.getUserAuthToken(accessToken);
+		if (customerAuthTokenEntity != null) {
+			if (customerAuthTokenEntity.getLogoutAt() != null)
+				throw new AuthorizationFailedException("ATHR-002",
+						"Customer is logged out. Log in again to access this endpoint.");
+			else if (customerAuthTokenEntity.getExpiresAt().isBefore(ZonedDateTime.now()))
+				throw new AuthorizationFailedException("ATHR-003",
+						"Your session is expired. Log in again to access this endpoint.");
+		} else {
+			// if user is not sign in then throws exception
+			throw new AuthorizationFailedException("ATHR-001", "Customer is not Logged in.");
+		}
+
+	}
 }
