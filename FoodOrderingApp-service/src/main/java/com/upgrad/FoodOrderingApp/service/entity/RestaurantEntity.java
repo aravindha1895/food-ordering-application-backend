@@ -11,7 +11,8 @@ import java.util.UUID;
 @Entity
 @Table(name="restaurant")
 @NamedQueries({
-        @NamedQuery(name = "allRestaurants", query = "select r from RestaurantEntity r ORDER BY r.restaurant_name")
+        @NamedQuery(name = "allRestaurants", query = "select r from RestaurantEntity r ORDER BY r.customer_rating DESC"),
+        @NamedQuery(name = "restbyName", query = "select r from RestaurantEntity r where lower(r.restaurant_name) LIKE :restaurant_name ORDER BY r.customer_rating DESC")
 })
 public class RestaurantEntity {
     @Id
