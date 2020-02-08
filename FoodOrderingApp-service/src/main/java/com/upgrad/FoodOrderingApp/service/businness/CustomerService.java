@@ -43,7 +43,7 @@ public class CustomerService {
 	}
 
 	private boolean isPhoneNumberExist(CustomerEntity customer) throws SignUpRestrictedException {
-		CustomerEntity customerEntity = cutomerDAO.getUserByPhoneNumber(customer.getEmail());
+		CustomerEntity customerEntity = cutomerDAO.getUserByPhoneNumber(customer.getContactNumber());
 		if (customerEntity != null) {
 			return true;
 		} else {

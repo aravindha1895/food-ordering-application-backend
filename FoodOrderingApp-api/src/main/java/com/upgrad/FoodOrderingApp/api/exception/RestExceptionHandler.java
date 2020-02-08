@@ -9,6 +9,7 @@ import org.springframework.web.context.request.WebRequest;
 import com.upgrad.FoodOrderingApp.api.model.ErrorResponse;
 import com.upgrad.FoodOrderingApp.service.exception.AuthorizationFailedException;
 import com.upgrad.FoodOrderingApp.service.exception.CouponNotFoundException;
+import com.upgrad.FoodOrderingApp.service.exception.SignUpRestrictedException;
 
 @ControllerAdvice
 public class RestExceptionHandler {
@@ -28,4 +29,10 @@ public class RestExceptionHandler {
 				HttpStatus.NOT_FOUND);
 
 	}
+	@ExceptionHandler(SignUpRestrictedException.class)
+	public ResponseEntity<ErrorResponse> signUpRestrictedException(SignUpRestrictedException exe, WebRequest request) {
+		return new ResponseEntity<ErrorResponse>(new ErrorResponse().code(exe.getCode()).message(exe.getErrorMessage()),
+				HttpStatus.CONFLICT);
+	}
+
 }
