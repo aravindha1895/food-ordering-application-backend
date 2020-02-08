@@ -113,6 +113,20 @@ public class CustomerService {
 		return existingRecord;
 	}
 	
+	@Transactional(propagation = Propagation.REQUIRED)
+	public CustomerEntity updateCustomerPassword(String oldPassword, String newPassword, String accessToken) throws UpdateCustomerException {
+		CustomerAuthTokenEntity customerAuthTokenEntity = null;
+		customerAuthTokenEntity = customerDAO.getUserAuthToken(accessToken);
+		CustomerEntity existingRecord= customerAuthTokenEntity.getUser();
+		final String encryptedOldPassword = cryptographyProvider.encrypt(oldPassword, existingRecord.getSalt());
+		if(!encryptedOldPassword.equals(existingRecord.getPassword()))
+				throw new UpdateCustomerException("UCR-004","Incorrect old password!");
+		final String encryptedNewPassword = cryptographyProvider.encrypt(newPassword, existingRecord.getSalt());
+		existingRecord.setPassword(encryptedNewPassword);
+		customerDAO.updateCustomerDetails(existingRecord);
+		return existingRecord;
+	}
+	
 	private boolean isPhoneNumberExist(CustomerEntity customer) throws SignUpRestrictedException {
 		CustomerEntity customerEntity = customerDAO.getUserByPhoneNumber(customer.getContactNumber());
 		if (customerEntity != null) {

@@ -21,6 +21,8 @@ import com.upgrad.FoodOrderingApp.api.model.SignupCustomerRequest;
 import com.upgrad.FoodOrderingApp.api.model.SignupCustomerResponse;
 import com.upgrad.FoodOrderingApp.api.model.UpdateCustomerRequest;
 import com.upgrad.FoodOrderingApp.api.model.UpdateCustomerResponse;
+import com.upgrad.FoodOrderingApp.api.model.UpdatePasswordRequest;
+import com.upgrad.FoodOrderingApp.api.model.UpdatePasswordResponse;
 import com.upgrad.FoodOrderingApp.service.businness.CustomerService;
 import com.upgrad.FoodOrderingApp.service.entity.CustomerAuthTokenEntity;
 import com.upgrad.FoodOrderingApp.service.entity.CustomerEntity;
@@ -129,4 +131,20 @@ public class CustomerController {
 				.status("CUSTOMER DETAILS UPDATED SUCCESSFULLY");
 		return new ResponseEntity<UpdateCustomerResponse>(response, HttpStatus.OK);
 	}
+	@RequestMapping(method = RequestMethod.PUT, path = "/customer/password", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+	public ResponseEntity<UpdatePasswordResponse> updateCustomerPassword(@RequestHeader("authorization") final String accessToken, @RequestBody UpdatePasswordRequest updatePasswordRequest) throws UpdateCustomerException {
+		String bearerToken = null;
+		try {
+			bearerToken = accessToken.split("Bearer ")[1];
+		} catch (ArrayIndexOutOfBoundsException e) {
+			bearerToken = accessToken;
+		}
+		CustomerEntity customerEntity= new CustomerEntity();
+		customerEntity = customerService.updateCustomerPassword(updatePasswordRequest.getOldPassword(),updatePasswordRequest.getNewPassword(), bearerToken);
+		UpdatePasswordResponse response = new UpdatePasswordResponse()
+				.id(customerEntity.getUuid())
+				.status("CUSTOMER PASSWORD UPDATED SUCCESSFULLY");
+		return new ResponseEntity<UpdatePasswordResponse>(response, HttpStatus.OK);
+	}
+
 }
