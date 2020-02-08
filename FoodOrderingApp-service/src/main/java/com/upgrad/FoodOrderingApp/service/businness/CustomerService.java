@@ -11,6 +11,7 @@ import com.upgrad.FoodOrderingApp.service.dao.CutomerDAO;
 import com.upgrad.FoodOrderingApp.service.entity.CustomerAuthTokenEntity;
 import com.upgrad.FoodOrderingApp.service.entity.CustomerEntity;
 import com.upgrad.FoodOrderingApp.service.exception.AuthenticationFailedException;
+import com.upgrad.FoodOrderingApp.service.exception.AuthorizationFailedException;
 import com.upgrad.FoodOrderingApp.service.exception.SignUpRestrictedException;
 
 @Service
@@ -77,6 +78,28 @@ public class CustomerService {
 			throw new AuthenticationFailedException("ATH-002", "Invalid Credentials");
 		}
 		return CustomerAuthTokenEntity;
+	}
+
+	@Transactional(propagation = Propagation.REQUIRED)
+	public CustomerAuthTokenEntity signOutService(String accessToken) throws AuthorizationFailedException {
+		CustomerAuthTokenEntity customerAuthTokenEntity = null;
+		// check user sign in or not
+		customerAuthTokenEntity = customerDAO.getUserAuthToken(accessToken);
+		if (customerAuthTokenEntity != null) {
+			if (customerAuthTokenEntity.getLogoutAt() != null)
+				throw new AuthorizationFailedException("ATHR-002",
+						"Customer is logged out. Log in again to access this endpoint.");
+			else if (customerAuthTokenEntity.getExpiresAt().isBefore(ZonedDateTime.now()))
+				throw new AuthorizationFailedException("ATHR-003",
+						"Your session is expired. Log in again to access this endpoint.");
+			final ZonedDateTime now = ZonedDateTime.now();
+			customerAuthTokenEntity.setLogoutAt(now);
+			customerAuthTokenEntity = customerDAO.updateUserLogOut(customerAuthTokenEntity);
+		} else {
+			// if user is not sign in then throws exception
+			throw new AuthorizationFailedException("ATHR-001", "Customer is not Logged in.");
+		}
+		return customerAuthTokenEntity;
 	}
 
 	private boolean isPhoneNumberExist(CustomerEntity customer) throws SignUpRestrictedException {

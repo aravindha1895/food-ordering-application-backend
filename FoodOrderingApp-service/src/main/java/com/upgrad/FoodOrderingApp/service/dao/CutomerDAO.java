@@ -52,5 +52,13 @@ public class CutomerDAO {
 		entityManager.persist(customerAuthTokenEntity);
 		return customerAuthTokenEntity;
 	}
-
+	
+	public CustomerAuthTokenEntity updateUserLogOut(final CustomerAuthTokenEntity customerAuthTokenEntity) {
+		try {
+			return entityManager.merge(customerAuthTokenEntity);
+		} catch (NoResultException nre) {
+			return null;
+		}
+	}
+	
 }

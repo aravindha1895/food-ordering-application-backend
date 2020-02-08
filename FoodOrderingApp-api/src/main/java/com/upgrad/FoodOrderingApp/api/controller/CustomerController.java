@@ -16,12 +16,14 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.upgrad.FoodOrderingApp.api.model.LoginResponse;
+import com.upgrad.FoodOrderingApp.api.model.LogoutResponse;
 import com.upgrad.FoodOrderingApp.api.model.SignupCustomerRequest;
 import com.upgrad.FoodOrderingApp.api.model.SignupCustomerResponse;
 import com.upgrad.FoodOrderingApp.service.businness.CustomerService;
 import com.upgrad.FoodOrderingApp.service.entity.CustomerAuthTokenEntity;
 import com.upgrad.FoodOrderingApp.service.entity.CustomerEntity;
 import com.upgrad.FoodOrderingApp.service.exception.AuthenticationFailedException;
+import com.upgrad.FoodOrderingApp.service.exception.AuthorizationFailedException;
 import com.upgrad.FoodOrderingApp.service.exception.SignUpRestrictedException;
 
 @RestController
@@ -60,7 +62,7 @@ public class CustomerController {
 		byte[] decode;
 		String decodedText;
 		String[] authArray;
-		/*Decode base 64 encoded values*/
+		/* Decode base 64 encoded values */
 		try {
 			authorizationArray = authorization.split("Basic ");
 			decode = Base64.getDecoder().decode(authorizationArray[1]);
@@ -83,5 +85,25 @@ public class CustomerController {
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("access-token", customerAuthToken.getAccessToken()); // Set access token in header
 		return new ResponseEntity<LoginResponse>(signinResponse, headers, HttpStatus.OK);
+	}
+
+	@RequestMapping(method = RequestMethod.POST, path = "/customer/logout", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+	public ResponseEntity<LogoutResponse> loginOut(@RequestHeader("authorization") final String accessToken)
+			throws AuthorizationFailedException {
+		LogoutResponse signoutResponse = null;
+		// Logic to handle Bearer <accesstoken>
+		// User can give only Access token or Bearer <accesstoken> as input.
+		String bearerToken = null;
+		try {
+			bearerToken = accessToken.split("Bearer ")[1];
+		} catch (ArrayIndexOutOfBoundsException e) {
+			bearerToken = accessToken;
+		}
+
+		CustomerAuthTokenEntity userAuthToken = customerService.signOutService(bearerToken);
+		if (userAuthToken != null) {
+			signoutResponse = new LogoutResponse().id(userAuthToken.getUuid()).message("LOGGED OUT SUCCESSFULLY");
+		}
+		return new ResponseEntity<LogoutResponse>(signoutResponse, HttpStatus.OK);
 	}
 }
