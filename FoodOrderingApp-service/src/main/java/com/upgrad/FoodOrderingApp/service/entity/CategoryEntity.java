@@ -22,8 +22,11 @@ public class CategoryEntity {
     @Size(max = 255)
     private String category_name;
 
-    @ManyToMany(mappedBy = "categories")
-    private List<RestaurantEntity> restaurants = new ArrayList<RestaurantEntity>();
+    @ManyToMany(mappedBy = "category", fetch = FetchType.LAZY)
+    private List<RestaurantEntity> restaurant = new ArrayList<RestaurantEntity>();
+
+    //@ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    //private List<ItemEntity> item = new ArrayList<ItemEntity>();
 
     public Integer getId() {
         return id;
@@ -50,10 +53,10 @@ public class CategoryEntity {
     }
 
     public List<RestaurantEntity> getRestaurants() {
-        return restaurants;
+        return restaurant;
     }
 
     public void setRestaurants(List<RestaurantEntity> restaurants) {
-        this.restaurants = restaurants;
+        this.restaurant = restaurants;
     }
 }
