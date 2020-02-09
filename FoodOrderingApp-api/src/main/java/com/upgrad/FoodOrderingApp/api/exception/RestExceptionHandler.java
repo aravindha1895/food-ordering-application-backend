@@ -34,7 +34,7 @@ public class RestExceptionHandler {
 	@ExceptionHandler(SignUpRestrictedException.class)
 	public ResponseEntity<ErrorResponse> signUpRestrictedException(SignUpRestrictedException exe, WebRequest request) {
 		return new ResponseEntity<ErrorResponse>(new ErrorResponse().code(exe.getCode()).message(exe.getErrorMessage()),
-				HttpStatus.CONFLICT);
+				HttpStatus.BAD_REQUEST);
 	}
 	@ExceptionHandler(AuthenticationFailedException.class)
 	public ResponseEntity<ErrorResponse> authenticationFailedException(AuthenticationFailedException exe,
@@ -46,6 +46,12 @@ public class RestExceptionHandler {
 	public ResponseEntity<ErrorResponse> updateCustomerFailedFailedException(UpdateCustomerException exe,
 			WebRequest request) {
 		return new ResponseEntity<ErrorResponse>(new ErrorResponse().code(exe.getCode()).message(exe.getErrorMessage()),
-				HttpStatus.UNAUTHORIZED);
+				HttpStatus.BAD_REQUEST);
+	}
+	@ExceptionHandler(NullPointerException.class)
+	public ResponseEntity<ErrorResponse> nullPointerException(NullPointerException exe,
+			WebRequest request) {
+		return new ResponseEntity<ErrorResponse>(new ErrorResponse().code(exe.getLocalizedMessage()).message(exe.getMessage()),
+				HttpStatus.BAD_REQUEST);
 	}
 }

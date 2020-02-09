@@ -103,7 +103,7 @@ public class CustomerService {
 	}
 
 	@Transactional(propagation = Propagation.REQUIRED)
-	public CustomerEntity updateCustomer(CustomerEntity updatedEntity, String accessToken) throws UpdateCustomerException {
+	public CustomerEntity updateCustomer(CustomerEntity updatedEntity, String accessToken) throws UpdateCustomerException, AuthorizationFailedException {
 		if(updatedEntity.getFirstName().trim().length()==0)
 			throw new UpdateCustomerException("UCR-002","First name field should not be empty");
 		CustomerAuthTokenEntity customerAuthTokenEntity = null;
@@ -116,7 +116,7 @@ public class CustomerService {
 	}
 	
 	@Transactional(propagation = Propagation.REQUIRED)
-	public CustomerEntity updateCustomerPassword(String oldPassword, String newPassword, String accessToken) throws UpdateCustomerException {
+	public CustomerEntity updateCustomerPassword(String oldPassword, String newPassword, String accessToken) throws UpdateCustomerException, AuthorizationFailedException {
 		if(!isValidPassword(newPassword))
 			throw new UpdateCustomerException("UCR-001","Weak password!");
 		CustomerAuthTokenEntity customerAuthTokenEntity = null;
@@ -141,8 +141,8 @@ public class CustomerService {
 	}
 
 	private boolean validateCustomer(CustomerEntity customer) {
-		if (customer.getEmail().trim().equals("") || customer.getContactNumber().equals("")
-				|| customer.getFirstName().equals("") || customer.getPassword().equals(""))
+		if (customer.getEmail().trim().length()==0 || customer.getContactNumber().length()==0
+				|| customer.getFirstName().length()==0 || customer.getPassword().length()==0)
 			return false;
 		return true;
 	}
@@ -165,7 +165,7 @@ public class CustomerService {
 		return password.length()>=8 && matcher.matches();
 	}
 
-	public void checkCustomerEntityValidity(String accessToken) throws AuthorizationFailedException {
+	public boolean checkCustomerEntityValidity(String accessToken) throws AuthorizationFailedException {
 		CustomerAuthTokenEntity customerAuthTokenEntity = null;
 		// check user sign in or not
 		customerAuthTokenEntity = customerDAO.getUserAuthToken(accessToken);
@@ -180,6 +180,6 @@ public class CustomerService {
 			// if user is not sign in then throws exception
 			throw new AuthorizationFailedException("ATHR-001", "Customer is not Logged in.");
 		}
-
+		return true;
 	}
 }

@@ -113,7 +113,7 @@ public class CustomerController {
 	}
 
 	@RequestMapping(method = RequestMethod.PUT, path = "/customer", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-	public ResponseEntity<UpdateCustomerResponse> updateCustomer(@RequestHeader("authorization") final String accessToken, @RequestBody UpdateCustomerRequest updateCustomerRequest) throws UpdateCustomerException {
+	public ResponseEntity<UpdateCustomerResponse> updateCustomer(@RequestHeader("authorization") final String accessToken, @RequestBody UpdateCustomerRequest updateCustomerRequest) throws UpdateCustomerException, AuthorizationFailedException {
 		String bearerToken = null;
 		try {
 			bearerToken = accessToken.split("Bearer ")[1];
@@ -132,7 +132,7 @@ public class CustomerController {
 		return new ResponseEntity<UpdateCustomerResponse>(response, HttpStatus.OK);
 	}
 	@RequestMapping(method = RequestMethod.PUT, path = "/customer/password", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-	public ResponseEntity<UpdatePasswordResponse> updateCustomerPassword(@RequestHeader("authorization") final String accessToken, @RequestBody UpdatePasswordRequest updatePasswordRequest) throws UpdateCustomerException {
+	public ResponseEntity<UpdatePasswordResponse> updateCustomerPassword(@RequestHeader("authorization") final String accessToken, @RequestBody UpdatePasswordRequest updatePasswordRequest) throws UpdateCustomerException, AuthorizationFailedException {
 		String bearerToken = null;
 		try {
 			bearerToken = accessToken.split("Bearer ")[1];
