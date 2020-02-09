@@ -8,6 +8,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import java.util.List;
+import java.util.UUID;
 
 @Repository
 public class RestaurantDao {
@@ -21,6 +22,10 @@ public class RestaurantDao {
 
     public List<RestaurantEntity> getAllRestaurantsByName(String restName) {
         return  entityManager.createNamedQuery("restbyName", RestaurantEntity.class).setParameter("restaurant_name", "%" + restName + "%").getResultList();
+    }
+
+    public RestaurantEntity getRestaurantById(String restUuid) {
+        return entityManager.createNamedQuery("restByUuid", RestaurantEntity.class).setParameter("uuid", restUuid).getSingleResult();
     }
 
 }
