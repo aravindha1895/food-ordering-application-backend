@@ -50,7 +50,7 @@ public class RestExceptionHandler {
 	}
 	@ExceptionHandler(NullPointerException.class)
 	public ResponseEntity<ErrorResponse> nullPointerException(NullPointerException exe,
-			WebRequest request) {
+			WebRequest request)  {
 		return new ResponseEntity<ErrorResponse>(new ErrorResponse().code(exe.getLocalizedMessage()).message(exe.getMessage()),
 				HttpStatus.BAD_REQUEST);
 	}
