@@ -28,4 +28,8 @@ public class RestaurantDao {
         return entityManager.createNamedQuery("restByUuid", RestaurantEntity.class).setParameter("uuid", restUuid).getSingleResult();
     }
 
+    public RestaurantEntity updateRestaurantDetails(RestaurantEntity restaurantEntity) {
+        return entityManager.merge(restaurantEntity);
+    }
+
 }

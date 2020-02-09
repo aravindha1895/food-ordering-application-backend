@@ -15,7 +15,7 @@ public class AddressEntity {
 
     @Column(name = "UUID")
     @Size(max = 200)
-    private UUID uuid;
+    private String uuid;
 
     @Column(name = "FLAT_BUIL_NUMBER")
     @Size(max = 255)
@@ -59,11 +59,11 @@ public class AddressEntity {
         this.id = id;
     }
 
-    public UUID getUuid() {
+    public String getUuid() {
         return uuid;
     }
 
-    public void setUuid(UUID uuid) {
+    public void setUuid(String uuid) {
         this.uuid = uuid;
     }
 

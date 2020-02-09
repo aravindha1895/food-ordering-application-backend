@@ -4,6 +4,7 @@ import com.upgrad.FoodOrderingApp.api.model.*;
 import com.upgrad.FoodOrderingApp.service.businness.RestaurantService;
 import com.upgrad.FoodOrderingApp.service.entity.CategoryEntity;
 import com.upgrad.FoodOrderingApp.service.entity.RestaurantEntity;
+import com.upgrad.FoodOrderingApp.service.exception.InvalidRatingException;
 import com.upgrad.FoodOrderingApp.service.exception.RestaurantNotFoundException;
 import io.swagger.models.Response;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +13,9 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.print.attribute.standard.Media;
 import java.awt.*;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -50,8 +53,10 @@ public class RestaurantController {
                             .customerRating(restaurantEntities.get(i).getCustomer_rating())
                             .averagePrice(restaurantEntities.get(i).getAverage_price_for_two())
                             .numberCustomersRated(restaurantEntities.get(i).getNumber_of_customers_rated())
+                            .id(UUID.fromString(restaurantEntities.get(i).getUuid()))
+                            .restaurantName(restaurantEntities.get(i).getRestaurant_name())
                             .address(new RestaurantDetailsResponseAddress()
-                                    .id(restaurantEntities.get(i).getAddressEntity().getUuid())
+                                    .id(UUID.fromString(restaurantEntities.get(i).getAddressEntity().getUuid()))
                                     .flatBuildingName(restaurantEntities.get(i).getAddressEntity().getFlat_buil_number())
                                     .locality(restaurantEntities.get(i).getAddressEntity().getLocality())
                                     .city(restaurantEntities.get(i).getAddressEntity().getCity())
@@ -81,7 +86,7 @@ public class RestaurantController {
                             .averagePrice(restbyNameEntitiesList.get(i).getAverage_price_for_two())
                             .numberCustomersRated(restbyNameEntitiesList.get(i).getNumber_of_customers_rated())
                             .address(new RestaurantDetailsResponseAddress()
-                                    .id(restbyNameEntitiesList.get(i).getAddressEntity().getUuid())
+                                    .id(UUID.fromString(restbyNameEntitiesList.get(i).getAddressEntity().getUuid()))
                                     .flatBuildingName(restbyNameEntitiesList.get(i).getAddressEntity().getFlat_buil_number())
                                     .locality(restbyNameEntitiesList.get(i).getAddressEntity().getLocality())
                                     .city(restbyNameEntitiesList.get(i).getAddressEntity().getCity())
@@ -106,7 +111,7 @@ public class RestaurantController {
                 .averagePrice(restaurantEntity.getAverage_price_for_two())
                 .numberCustomersRated(restaurantEntity.getNumber_of_customers_rated())
                 .address(new RestaurantDetailsResponseAddress()
-                        .id(restaurantEntity.getAddressEntity().getUuid())
+                        .id(UUID.fromString(restaurantEntity.getAddressEntity().getUuid()))
                         .flatBuildingName(restaurantEntity.getAddressEntity().getFlat_buil_number())
                         .locality(restaurantEntity.getAddressEntity().getLocality())
                         .city(restaurantEntity.getAddressEntity().getCity())
@@ -116,5 +121,17 @@ public class RestaurantController {
                         )
                 );
         return new ResponseEntity<RestaurantDetailsResponse>(restResponse, HttpStatus.OK);
+    }
+
+    @RequestMapping(method = RequestMethod.PUT, path = "/restaurant/{restaurant_id}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity<RestaurantUpdatedResponse> updateRestaurantDetails(@RequestParam Double customerRating , @PathVariable("restaurant_id") final String restaurant_id) throws RestaurantNotFoundException, InvalidRatingException {
+        RestaurantEntity restaurantEntity = new RestaurantEntity();
+        restaurantEntity.setUuid(restaurant_id);
+        restaurantEntity.setCustomer_rating(BigDecimal.valueOf(customerRating));
+        RestaurantEntity updatedRestaurantEntity = restaurantService.updateRestaurantDetails(restaurantEntity);
+        RestaurantUpdatedResponse restUpdateResponse = new RestaurantUpdatedResponse()
+                .id(UUID.fromString(updatedRestaurantEntity.getUuid()))
+                .status("RESTAURANT RATING UPDATED SUCCESSFULLY");
+        return new ResponseEntity<RestaurantUpdatedResponse>(restUpdateResponse, HttpStatus.OK);
     }
 }
