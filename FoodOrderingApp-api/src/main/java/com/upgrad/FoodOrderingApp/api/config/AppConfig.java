@@ -17,6 +17,7 @@ public class AppConfig extends WebMvcConfigurerAdapter {
 	@Autowired
 	AuthenticationInterceptor authenticationInterceptor;
 
+	/*Add all paths that require authentication checks here*/
 	String[] pathPatternToIntercept = { "/order/coupon/{coupon_name}", "/order", "/customer/logout", "/customer",
 			"/customer/password" };
 	List<String> pathsToIntercept = new ArrayList<String>(Arrays.asList(pathPatternToIntercept));

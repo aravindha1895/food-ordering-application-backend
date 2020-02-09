@@ -103,34 +103,36 @@ public class CustomerService {
 	}
 
 	@Transactional(propagation = Propagation.REQUIRED)
-	public CustomerEntity updateCustomer(CustomerEntity updatedEntity, String accessToken) throws UpdateCustomerException, AuthorizationFailedException {
-		if(updatedEntity.getFirstName().trim().length()==0)
-			throw new UpdateCustomerException("UCR-002","First name field should not be empty");
+	public CustomerEntity updateCustomer(CustomerEntity updatedEntity, String accessToken)
+			throws UpdateCustomerException, AuthorizationFailedException {
+		if (updatedEntity.getFirstName().trim().length() == 0)
+			throw new UpdateCustomerException("UCR-002", "First name field should not be empty");
 		CustomerAuthTokenEntity customerAuthTokenEntity = null;
 		customerAuthTokenEntity = customerDAO.getUserAuthToken(accessToken);
-		CustomerEntity existingRecord= customerAuthTokenEntity.getUser();
+		CustomerEntity existingRecord = customerAuthTokenEntity.getUser();
 		existingRecord.setFirstName(updatedEntity.getFirstName());
 		existingRecord.setLastName(updatedEntity.getLastName());
 		customerDAO.updateCustomerDetails(existingRecord);
 		return existingRecord;
 	}
-	
+
 	@Transactional(propagation = Propagation.REQUIRED)
-	public CustomerEntity updateCustomerPassword(String oldPassword, String newPassword, String accessToken) throws UpdateCustomerException, AuthorizationFailedException {
-		if(!isValidPassword(newPassword))
-			throw new UpdateCustomerException("UCR-001","Weak password!");
+	public CustomerEntity updateCustomerPassword(String oldPassword, String newPassword, String accessToken)
+			throws UpdateCustomerException, AuthorizationFailedException {
+		if (!isValidPassword(newPassword))
+			throw new UpdateCustomerException("UCR-001", "Weak password!");
 		CustomerAuthTokenEntity customerAuthTokenEntity = null;
 		customerAuthTokenEntity = customerDAO.getUserAuthToken(accessToken);
-		CustomerEntity existingRecord= customerAuthTokenEntity.getUser();
+		CustomerEntity existingRecord = customerAuthTokenEntity.getUser();
 		final String encryptedOldPassword = cryptographyProvider.encrypt(oldPassword, existingRecord.getSalt());
-		if(!encryptedOldPassword.equals(existingRecord.getPassword()))
-				throw new UpdateCustomerException("UCR-004","Incorrect old password!");
+		if (!encryptedOldPassword.equals(existingRecord.getPassword()))
+			throw new UpdateCustomerException("UCR-004", "Incorrect old password!");
 		final String encryptedNewPassword = cryptographyProvider.encrypt(newPassword, existingRecord.getSalt());
 		existingRecord.setPassword(encryptedNewPassword);
 		customerDAO.updateCustomerDetails(existingRecord);
 		return existingRecord;
 	}
-	
+
 	private boolean isPhoneNumberExist(CustomerEntity customer) throws SignUpRestrictedException {
 		CustomerEntity customerEntity = customerDAO.getUserByPhoneNumber(customer.getContactNumber());
 		if (customerEntity != null) {
@@ -141,16 +143,16 @@ public class CustomerService {
 	}
 
 	private boolean validateCustomer(CustomerEntity customer) {
-		if (customer.getEmail().trim().length()==0 || customer.getContactNumber().length()==0
-				|| customer.getFirstName().length()==0 || customer.getPassword().length()==0)
+		if (customer.getEmail().trim().length() == 0 || customer.getContactNumber().length() == 0
+				|| customer.getFirstName().length() == 0 || customer.getPassword().length() == 0)
 			return false;
 		return true;
 	}
 
 	private boolean isValidEmailID(CustomerEntity customer) {
 		Pattern pattern = Pattern.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,6}$", Pattern.CASE_INSENSITIVE);
-        Matcher matcher = pattern .matcher(customer.getEmail());
-        return matcher.find();
+		Matcher matcher = pattern.matcher(customer.getEmail());
+		return matcher.find();
 	}
 
 	private boolean isValidPhoneNumber(CustomerEntity customer) {
@@ -160,11 +162,21 @@ public class CustomerService {
 	}
 
 	private boolean isValidPassword(String password) {
-		Pattern p1= Pattern.compile("^(?=.*\\d)(?=.*[A-Z])(?=.*\\W).*$");
-		Matcher matcher=p1.matcher(password);
-		return password.length()>=8 && matcher.matches();
+		Pattern p1 = Pattern.compile("^(?=.*\\d)(?=.*[A-Z])(?=.*\\W).*$");
+		Matcher matcher = p1.matcher(password);
+		return password.length() >= 8 && matcher.matches();
 	}
 
+	/**
+	 * This function checks if the customer is logged in or if the token is expired
+	 * or not. FOr the endpoints that require protection of login checks, please
+	 * configure those endpoints in AppConfig.java which will inturn use this
+	 * function to check validity
+	 * 
+	 * @param accessToken
+	 * @return boolean if valid customer
+	 * @throws AuthorizationFailedException
+	 */
 	public boolean checkCustomerEntityValidity(String accessToken) throws AuthorizationFailedException {
 		CustomerAuthTokenEntity customerAuthTokenEntity = null;
 		// check user sign in or not
