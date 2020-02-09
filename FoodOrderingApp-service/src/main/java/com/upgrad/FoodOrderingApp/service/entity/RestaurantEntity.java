@@ -1,5 +1,9 @@
 package com.upgrad.FoodOrderingApp.service.entity;
 
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
+import org.hibernate.annotations.ManyToAny;
+
 import javax.persistence.*;
 import javax.validation.constraints.Size;
 import java.math.BigDecimal;
@@ -12,7 +16,8 @@ import java.util.UUID;
 @Table(name="restaurant")
 @NamedQueries({
         @NamedQuery(name = "allRestaurants", query = "select r from RestaurantEntity r ORDER BY r.customer_rating DESC"),
-        @NamedQuery(name = "restbyName", query = "select r from RestaurantEntity r where lower(r.restaurant_name) LIKE :restaurant_name ORDER BY r.customer_rating DESC")
+        @NamedQuery(name = "restbyName", query = "select r from RestaurantEntity r where lower(r.restaurant_name) LIKE :restaurant_name ORDER BY r.customer_rating DESC"),
+        @NamedQuery(name = "restByUuid", query = "select r from RestaurantEntity r where r.uuid=:uuid")
 })
 public class RestaurantEntity {
     @Id
@@ -22,7 +27,7 @@ public class RestaurantEntity {
 
     @Column(name = "UUID")
     @Size(max = 200)
-    private UUID uuid;
+    private String uuid;
 
     @Column(name = "RESTAURANT_NAME")
     @Size(max = 50)
@@ -45,16 +50,26 @@ public class RestaurantEntity {
     @JoinColumn(name = "ADDRESS_ID")
     private AddressEntity addressEntity;
 
-    @ManyToMany
-    @JoinTable(name="restaurant_category")
-    private List<CategoryEntity> categories = new ArrayList<CategoryEntity>();
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    private List<CategoryEntity> category = new ArrayList<CategoryEntity>();
+
+    //@ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    //private List<ItemEntity> item = new ArrayList<ItemEntity>();
+
+    //public List<ItemEntity> getItem() {
+    //    return item;
+    //}
+
+//    public void setItem(List<ItemEntity> item) {
+//        this.item = item;
+//    }
 
     public List<CategoryEntity> getCategories() {
-        return categories;
+        return category;
     }
 
     public void setCategories(List<CategoryEntity> categories) {
-        this.categories = categories;
+        this.category = categories;
     }
 
     public Integer getId() {
@@ -65,11 +80,11 @@ public class RestaurantEntity {
         this.id = id;
     }
 
-    public UUID getUuid() {
+    public String getUuid() {
         return uuid;
     }
 
-    public void setUuid(UUID uuid) {
+    public void setUuid(String uuid) {
         this.uuid = uuid;
     }
 
