@@ -92,6 +92,7 @@ public class CustomerController {
 		return new ResponseEntity<LoginResponse>(signinResponse, headers, HttpStatus.OK);
 	}
 
+	@CrossOrigin
 	@RequestMapping(method = RequestMethod.POST, path = "/customer/logout", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 	public ResponseEntity<LogoutResponse> loginOut(@RequestHeader("authorization") final String accessToken)
 			throws AuthorizationFailedException {
@@ -112,37 +113,44 @@ public class CustomerController {
 		return new ResponseEntity<LogoutResponse>(signoutResponse, HttpStatus.OK);
 	}
 
+	@CrossOrigin
 	@RequestMapping(method = RequestMethod.PUT, path = "/customer", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-	public ResponseEntity<UpdateCustomerResponse> updateCustomer(@RequestHeader("authorization") final String accessToken, @RequestBody UpdateCustomerRequest updateCustomerRequest) throws UpdateCustomerException, AuthorizationFailedException {
+	public ResponseEntity<UpdateCustomerResponse> updateCustomer(
+			@RequestHeader("authorization") final String accessToken,
+			@RequestBody UpdateCustomerRequest updateCustomerRequest)
+			throws UpdateCustomerException, AuthorizationFailedException {
 		String bearerToken = null;
 		try {
 			bearerToken = accessToken.split("Bearer ")[1];
 		} catch (ArrayIndexOutOfBoundsException e) {
 			bearerToken = accessToken;
 		}
-		CustomerEntity customerEntity= new CustomerEntity();
+		CustomerEntity customerEntity = new CustomerEntity();
 		customerEntity.setFirstName(updateCustomerRequest.getFirstName());
 		customerEntity.setLastName(updateCustomerRequest.getLastName());
 		customerEntity = customerService.updateCustomer(customerEntity, bearerToken);
-		UpdateCustomerResponse response = new UpdateCustomerResponse()
-				.id(customerEntity.getUuid())
-				.firstName(customerEntity.getFirstName())
-				.lastName(customerEntity.getLastName())
+		UpdateCustomerResponse response = new UpdateCustomerResponse().id(customerEntity.getUuid())
+				.firstName(customerEntity.getFirstName()).lastName(customerEntity.getLastName())
 				.status("CUSTOMER DETAILS UPDATED SUCCESSFULLY");
 		return new ResponseEntity<UpdateCustomerResponse>(response, HttpStatus.OK);
 	}
+
+	@CrossOrigin
 	@RequestMapping(method = RequestMethod.PUT, path = "/customer/password", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-	public ResponseEntity<UpdatePasswordResponse> updateCustomerPassword(@RequestHeader("authorization") final String accessToken, @RequestBody UpdatePasswordRequest updatePasswordRequest) throws UpdateCustomerException, AuthorizationFailedException {
+	public ResponseEntity<UpdatePasswordResponse> updateCustomerPassword(
+			@RequestHeader("authorization") final String accessToken,
+			@RequestBody UpdatePasswordRequest updatePasswordRequest)
+			throws UpdateCustomerException, AuthorizationFailedException {
 		String bearerToken = null;
 		try {
 			bearerToken = accessToken.split("Bearer ")[1];
 		} catch (ArrayIndexOutOfBoundsException e) {
 			bearerToken = accessToken;
 		}
-		CustomerEntity customerEntity= new CustomerEntity();
-		customerEntity = customerService.updateCustomerPassword(updatePasswordRequest.getOldPassword(),updatePasswordRequest.getNewPassword(), bearerToken);
-		UpdatePasswordResponse response = new UpdatePasswordResponse()
-				.id(customerEntity.getUuid())
+		CustomerEntity customerEntity = new CustomerEntity();
+		customerEntity = customerService.updateCustomerPassword(updatePasswordRequest.getOldPassword(),
+				updatePasswordRequest.getNewPassword(), bearerToken);
+		UpdatePasswordResponse response = new UpdatePasswordResponse().id(customerEntity.getUuid())
 				.status("CUSTOMER PASSWORD UPDATED SUCCESSFULLY");
 		return new ResponseEntity<UpdatePasswordResponse>(response, HttpStatus.OK);
 	}
