@@ -50,19 +50,19 @@ public class RestaurantEntity {
     @JoinColumn(name = "ADDRESS_ID")
     private AddressEntity addressEntity;
 
-    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<CategoryEntity> category = new ArrayList<CategoryEntity>();
 
-    //@ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    //private List<ItemEntity> item = new ArrayList<ItemEntity>();
+    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<ItemEntity> item = new ArrayList<ItemEntity>();
 
-    //public List<ItemEntity> getItem() {
-    //    return item;
-    //}
+    public List<ItemEntity> getItem() {
+        return item;
+    }
 
-//    public void setItem(List<ItemEntity> item) {
-//        this.item = item;
-//    }
+    public void setItem(List<ItemEntity> item) {
+        this.item = item;
+    }
 
     public List<CategoryEntity> getCategories() {
         return category;

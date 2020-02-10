@@ -8,7 +8,8 @@ import java.util.List;
 @Entity
 @Table(name="category")
 @NamedQueries({
-        @NamedQuery(name = "allCategories", query = "select c from CategoryEntity c ORDER BY c.category_name ASC")
+        @NamedQuery(name = "allCategories", query = "select c from CategoryEntity c ORDER BY c.category_name ASC"),
+        @NamedQuery(name = "categoryById", query = "select c from CategoryEntity c where c.uuid=:catuuid")
 })
 public class CategoryEntity {
 
@@ -28,8 +29,24 @@ public class CategoryEntity {
     @ManyToMany(mappedBy = "category", fetch = FetchType.LAZY)
     private List<RestaurantEntity> restaurant = new ArrayList<RestaurantEntity>();
 
-    //@ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    //private List<ItemEntity> item = new ArrayList<ItemEntity>();
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    private List<ItemEntity> item = new ArrayList<ItemEntity>();
+
+    public List<RestaurantEntity> getRestaurant() {
+        return restaurant;
+    }
+
+    public void setRestaurant(List<RestaurantEntity> restaurant) {
+        this.restaurant = restaurant;
+    }
+
+    public List<ItemEntity> getItem() {
+        return item;
+    }
+
+    public void setItem(List<ItemEntity> item) {
+        this.item = item;
+    }
 
     public Integer getId() {
         return id;
