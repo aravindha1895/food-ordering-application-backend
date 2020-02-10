@@ -7,6 +7,9 @@ import java.util.List;
 
 @Entity
 @Table(name="category")
+@NamedQueries({
+        @NamedQuery(name = "allCategories", query = "select c from CategoryEntity c ORDER BY c.category_name ASC")
+})
 public class CategoryEntity {
 
     @Id
