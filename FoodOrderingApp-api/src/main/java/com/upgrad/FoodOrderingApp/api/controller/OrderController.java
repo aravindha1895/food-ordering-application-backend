@@ -17,6 +17,7 @@ import com.upgrad.FoodOrderingApp.api.model.SaveOrderRequest;
 import com.upgrad.FoodOrderingApp.api.model.SaveOrderResponse;
 import com.upgrad.FoodOrderingApp.service.businness.OrderService;
 import com.upgrad.FoodOrderingApp.service.entity.CouponEntity;
+import com.upgrad.FoodOrderingApp.service.exception.AuthorizationFailedException;
 import com.upgrad.FoodOrderingApp.service.exception.CouponNotFoundException;
 
 @RestController
@@ -25,7 +26,7 @@ public class OrderController {
 	OrderService orderService;
 	
 	@RequestMapping(method=RequestMethod.GET,value="/order/coupon/{coupon_name}",produces=MediaType.APPLICATION_JSON_UTF8_VALUE)
-	public ResponseEntity<CouponDetailsResponse> getCouponByName(@PathVariable("coupon_name") String couponName) throws CouponNotFoundException{
+	public ResponseEntity<CouponDetailsResponse> getCouponByName(@PathVariable("coupon_name") String couponName) throws CouponNotFoundException, AuthorizationFailedException{
 		CouponEntity couponEntity =  orderService.getCouponDetailByName(couponName);
 		CouponDetailsResponse couponDetailsResponse= new CouponDetailsResponse();
 		couponDetailsResponse.setCouponName(couponEntity.getCouponName());

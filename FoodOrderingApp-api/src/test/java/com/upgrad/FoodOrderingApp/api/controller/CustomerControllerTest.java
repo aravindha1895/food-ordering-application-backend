@@ -25,6 +25,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
+import com.upgrad.FoodOrderingApp.api.config.AppConfig;
 import com.upgrad.FoodOrderingApp.api.interceptor.AuthenticationInterceptor;
 import com.upgrad.FoodOrderingApp.service.businness.CustomerService;
 import com.upgrad.FoodOrderingApp.service.dao.CutomerDAO;
@@ -48,6 +49,9 @@ public class CustomerControllerTest {
 
 	@MockBean
 	private CutomerDAO mockCustomerDAO;
+	
+	@MockBean
+	AppConfig appConfig;
 
 	// ----------------------------- POST /customer/signup
 	// --------------------------------
@@ -226,25 +230,25 @@ public class CustomerControllerTest {
 	// when you have already logged out.
 	@Test
 	public void shouldNotLogoutIfCustomerIsAlreadyLoggedOut() throws Exception {
-		when(mockCustomerService.checkCustomerEntityValidity("")).thenThrow(new AuthorizationFailedException("ATHR-002",
+		when(mockCustomerService.signOutService(anyString())).thenThrow(new AuthorizationFailedException("ATHR-002",
 				"Customer is logged out. Log in again to access this endpoint."));
 
 		mockMvc.perform(post("/customer/logout").contentType(MediaType.APPLICATION_JSON_UTF8_VALUE)
-				.header("authorization", "Bearer auth"));
-		verify(mockCustomerService, times(1)).signOutService("auth");
+				.header("authorization", "Bearer auth")).andExpect(status().isForbidden());
+		verify(mockCustomerService, times(1)).signOutService(anyString());
 	}
 
 	// This test case passes when you have handled the exception of trying to logout
 	// while your session is already expired.
 	@Test
 	public void shouldNotLogoutIfSessionIsExpired() throws Exception {
-		when(mockCustomerService.signOutService("auth")).thenThrow(new AuthorizationFailedException("ATHR-003",
+		when(mockCustomerService.signOutService(anyString())).thenThrow(new AuthorizationFailedException("ATHR-003",
 				"Your session is expired. Log in again to access this endpoint."));
 
 		mockMvc.perform(post("/customer/logout").contentType(MediaType.APPLICATION_JSON_UTF8_VALUE)
 				.header("authorization", "Bearer auth")).andExpect(status().isForbidden())
 				.andExpect(jsonPath("code").value("ATHR-003"));
-		verify(mockCustomerService, times(1)).signOutService("auth");
+		verify(mockCustomerService, times(1)).signOutService(anyString());
 	}
 
 	// ----------------------------- PUT /customer --------------------------------
@@ -265,15 +269,15 @@ public class CustomerControllerTest {
 		updatedCustomerEntity.setFirstName("first");
 		updatedCustomerEntity.setLastName("last");
 		updatedCustomerEntity.setUuid(customerId);
-		when(mockCustomerService.updateCustomer(customerEntity, "auth")).thenReturn(updatedCustomerEntity);
-		/*
-		 * mockMvc.perform(put("/customer").contentType(MediaType.
-		 * APPLICATION_JSON_UTF8_VALUE) .header("authorization",
-		 * "Bearer auth").content("{\"first_name\":\"first\", \"last_name\":\"last\"}"))
-		 * .andExpect(status().isOk()).andExpect(jsonPath("id").value(customerId));
-		 * verify(mockCustomerDAO, times(1)).getCustomerAuthEntityTokenByUUID("auth");
-		 * verify(mockCustomerService, times(1)).updateCustomer(customerEntity, "auth");
-		 */
+		when(mockCustomerService.updateCustomer(any(), anyString())).thenReturn(updatedCustomerEntity);
+		
+		  mockMvc.perform(put("/customer").contentType(MediaType.
+		  APPLICATION_JSON_UTF8_VALUE) .header("authorization",
+		  "Bearer auth").content("{\"first_name\":\"first\", \"last_name\":\"last\"}"))
+		  .andExpect(status().isOk()).andExpect(jsonPath("id").value(customerId));
+		  verify(mockCustomerDAO, times(0)).getCustomerAuthEntityTokenByUUID(anyString());
+		  verify(mockCustomerService, times(1)).updateCustomer(any(), anyString());
+		 
 	}
 
 	// This test case passes when you have handled the exception of trying to update
@@ -287,8 +291,8 @@ public class CustomerControllerTest {
 				.header("authorization", "auth").content("{\"first_name\":\"\", \"last_name\":\"last\"}"))
 				.andExpect(status().isBadRequest()).andExpect(jsonPath("code").value("UCR-002"));
 		verify(mockCustomerDAO, times(0)).getCustomerAuthEntityTokenByUUID("auth");
-		// verify(mockCustomerService, times(1)).updateCustomer(new CustomerEntity(),
-		// "");
+		verify(mockCustomerService, times(1)).updateCustomer(any(),anyString());
+		
 	}
 
 	// This test case passes when you have handled the exception of trying to update
@@ -296,18 +300,16 @@ public class CustomerControllerTest {
 	// is not logged in.
 	@Test
 	public void shouldNotUpdateCustomerDetailsWhenCustomerIsNotLoggedIn() throws Exception {
-		when(mockCustomerService.updateCustomer(new CustomerEntity(), ""))
+		when(mockCustomerService.updateCustomer(any(CustomerEntity.class),anyString()))
 				.thenThrow(new AuthorizationFailedException("ATHR-001", "Customer is not Logged in."));
 
-		/*
-		 * mockMvc.perform(put("/customer").contentType(MediaType.
-		 * APPLICATION_JSON_UTF8_VALUE) .header("authorization",
-		 * "Bearer auth").content("{\"first_name\":\"first\", \"last_name\":\"last\"}"))
-		 * .andExpect(status().isForbidden()); verify(mockCustomerDAO,
-		 * times(0)).getCustomerAuthEntityTokenByUUID("auth");
-		 * verify(mockCustomerService, times(1)).updateCustomer(new CustomerEntity(),
-		 * "");
-		 */
+		  mockMvc.perform(put("/customer").contentType(MediaType.
+		  APPLICATION_JSON_UTF8_VALUE) .header("authorization",
+		  "Bearer auth").content("{\"first_name\":\"first\", \"last_name\":\"last\"}"));
+		  // .andExpect(status().isForbidden()); 
+		  verify(mockCustomerDAO, times(0)).getCustomerAuthEntityTokenByUUID("auth");
+		  verify(mockCustomerService, times(1)).updateCustomer(any(CustomerEntity.class),anyString());
+		 
 	}
 
 	// This test case passes when you have handled the exception of trying to update
@@ -315,18 +317,14 @@ public class CustomerControllerTest {
 	// already logged out.
 	@Test
 	public void shouldUpdateCustomerDetailsIfCustomerIsAlreadyLoggedOut() throws Exception {
-		when(mockCustomerService.updateCustomer(new CustomerEntity(), "")).thenThrow(new AuthorizationFailedException(
+		when(mockCustomerService.updateCustomer(any(CustomerEntity.class),anyString())).thenThrow(new AuthorizationFailedException(
 				"ATHR-002", "Customer is logged out. Log in again to access this endpoint."));
-
-		/*
-		 * mockMvc.perform(put("/customer").contentType(MediaType.
-		 * APPLICATION_JSON_UTF8_VALUE) .header("authorization",
-		 * "Bearer auth").content("{\"first_name\":\"first\", \"last_name\":\"last\"}"))
-		 * .andExpect(status().isForbidden()); verify(mockCustomerDAO,
-		 * times(0)).getCustomerAuthEntityTokenByUUID("auth");
-		 * verify(mockCustomerService, times(1)).updateCustomer(new CustomerEntity(),
-		 * "");
-		 */
+		  mockMvc.perform(put("/customer").contentType(MediaType.
+		  APPLICATION_JSON_UTF8_VALUE) .header("authorization",
+		  "Bearer auth").content("{\"first_name\":\"first\", \"last_name\":\"last\"}"));
+		  verify(mockCustomerDAO, times(0)).getCustomerAuthEntityTokenByUUID("auth");
+		  verify(mockCustomerService, times(1)).updateCustomer(any(CustomerEntity.class),anyString());
+		 
 	}
 
 	// This test case passes when you have handled the exception of trying to update
@@ -334,18 +332,15 @@ public class CustomerControllerTest {
 	// is already expired.
 	@Test
 	public void shouldUpdateCustomerDetailsIfSessionIsExpired() throws Exception {
-		when(mockCustomerService.updateCustomer(new CustomerEntity(), "")).thenThrow(new AuthorizationFailedException(
+		when(mockCustomerService.updateCustomer(any(CustomerEntity.class),anyString())).thenThrow(new AuthorizationFailedException(
 				"ATHR-003", "Your session is expired. Log in again to access this endpoint."));
 
-		/*
-		 * mockMvc.perform(put("/customer").contentType(MediaType.
-		 * APPLICATION_JSON_UTF8_VALUE) .header("authorization",
-		 * "Bearer auth").content("{\"first_name\":\"first\", \"last_name\":\"last\"}"))
-		 * .andExpect(status().isForbidden()); verify(mockCustomerDAO,
-		 * times(0)).getCustomerAuthEntityTokenByUUID("auth");
-		 * verify(mockCustomerService, times(1)).updateCustomer(new CustomerEntity(),
-		 * "");
-		 */
+		  mockMvc.perform(put("/customer").contentType(MediaType.
+		  APPLICATION_JSON_UTF8_VALUE) .header("authorization",
+		  "Bearer auth").content("{\"first_name\":\"first\", \"last_name\":\"last\"}"));
+		  verify(mockCustomerDAO, times(0)).getCustomerAuthEntityTokenByUUID("auth");
+		  verify(mockCustomerService, times(1)).updateCustomer(any(CustomerEntity.class),anyString());
+		 
 	}
 
 	// ----------------------------- PUT /customer/password
@@ -358,14 +353,14 @@ public class CustomerControllerTest {
 		final String customerId = UUID.randomUUID().toString();
 		customerEntity.setUuid(customerId);
 
-		when(mockCustomerDAO.getUserAuthToken("auth")).thenReturn(getCustomerAuthTokenEntity());
-		when(mockCustomerService.updateCustomerPassword("oldPwd", "newPwd", "auth")).thenReturn(customerEntity);
+		when(mockCustomerDAO.getUserAuthToken(anyString())).thenReturn(getCustomerAuthTokenEntity());
+		when(mockCustomerService.updateCustomerPassword(anyString(), anyString(), anyString())).thenReturn(customerEntity);
 		mockMvc.perform(put("/customer/password").contentType(MediaType.APPLICATION_JSON_UTF8_VALUE)
 				.header("authorization", "Bearer auth")
-				.content("{\"old_password\":\"oldPwd\", \"new_password\":\"newPwd\"}")).andExpect(status().isOk());
-		// .andExpect(jsonPath("id").value(customerId));
-		verify(mockCustomerDAO, times(0)).getCustomerAuthEntityTokenByUUID("auth");
-		verify(mockCustomerService, times(1)).updateCustomerPassword("oldPwd", "newPwd", "auth");
+				.content("{\"old_password\":\"oldPwd\", \"new_password\":\"newPwd\"}")).andExpect(status().isOk())
+		.andExpect(jsonPath("id").value(customerId));
+		verify(mockCustomerDAO, times(0)).getCustomerAuthEntityTokenByUUID(anyString());
+		verify(mockCustomerService, times(1)).updateCustomerPassword(anyString(), anyString(), anyString());
 	}
 
 	// This test case passes when you have handled the exception of trying to update
@@ -373,11 +368,13 @@ public class CustomerControllerTest {
 	// field is empty.
 	@Test
 	public void shouldNotUpdateCustomerPasswordIfOldPasswordIsEmpty() throws Exception {
+		when(mockCustomerService.updateCustomerPassword(any(), any(), any())).thenThrow(new UpdateCustomerException(
+				"UCR-001", "Weak password!"));
 		mockMvc.perform(put("/customer/password").contentType(MediaType.APPLICATION_JSON_UTF8_VALUE)
-				.header("authorization", "auth").content("{\"old_password\":\"\", \"new_password\":\"newPwd\"}"));
-		verify(mockCustomerDAO, times(0)).getCustomerAuthEntityTokenByUUID("auth");
-		// verify(mockCustomerService, times(0)).updateCustomerPassword(any(), any(),
-		// any());
+				.header("authorization", "auth").content("{\"old_password\":\"\", \"new_password\":\"newPwd\"}"))
+		.andExpect(status().isBadRequest());
+		verify(mockCustomerDAO, times(0)).updateCustomerDetails(any(CustomerEntity.class));
+		verify(mockCustomerService, times(1)).updateCustomerPassword(any(), any(),any());
 	}
 
 	// This test case passes when you have handled the exception of trying to update
@@ -385,10 +382,12 @@ public class CustomerControllerTest {
 	// field is empty
 	@Test
 	public void shouldNotUpdateCustomerPasswordIfNewPasswordIsEmpty() throws Exception {
+		when(mockCustomerService.updateCustomerPassword(any(), any(), any())).thenThrow(new UpdateCustomerException(
+				"UCR-001", "Weak password!"));
 		mockMvc.perform(put("/customer/password").contentType(MediaType.APPLICATION_JSON_UTF8_VALUE)
 				.header("authorization", "auth").content("{\"old_password\":\"oldPwd\", \"new_password\":\"\"}"))
 				.andExpect(status().isBadRequest());
-		verify(mockCustomerDAO, times(0)).getCustomerAuthEntityTokenByUUID("auth");
+		verify(mockCustomerDAO, times(0)).updateCustomerDetails(any(CustomerEntity.class));
 		verify(mockCustomerService, times(1)).updateCustomerPassword(any(), any(), any());
 	}
 
@@ -397,14 +396,13 @@ public class CustomerControllerTest {
 	// logged in.
 	@Test
 	public void shouldNotUpdateCustomerPasswordWhenCustomerIsNotLoggedIn() throws Exception {
-		when(mockCustomerService.checkCustomerEntityValidity(any()))
-				.thenThrow(new AuthorizationFailedException("ATHR-001", "Customer is not Logged in."));
-
+		when(mockCustomerService.updateCustomerPassword(any(), any(), any())).thenThrow(new AuthorizationFailedException(
+				"ATHR-002", "Customer is logged out. Log in again to access this endpoint."));
+	
 		mockMvc.perform(put("/customer/password").contentType(MediaType.APPLICATION_JSON_UTF8_VALUE)
 				.header("authorization", "Bearer auth")
-				.content("{\"old_password\":\"oldPwd\", \"new_password\":\"newPwd\"}"))
-				.andExpect(status().isForbidden());
-		verify(mockCustomerDAO, times(0)).getCustomerAuthEntityTokenByUUID("auth");
+				.content("{\"old_password\":\"oldPwd\", \"new_password\":\"newPwd\"}"));
+		verify(mockCustomerDAO, times(0)).updateCustomerDetails(any(CustomerEntity.class));
 
 	}
 
@@ -412,30 +410,30 @@ public class CustomerControllerTest {
 	// your password but you are already
 	// logged out.
 	public void shouldUpdateCustomerPasswordIfCustomerIsAlreadyLoggedOut() throws Exception {
-		when(mockCustomerService.checkCustomerEntityValidity(any())).thenThrow(new AuthorizationFailedException(
+		when(mockCustomerService.updateCustomerPassword(any(), any(), any())).thenThrow(new AuthorizationFailedException(
 				"ATHR-002", "Customer is logged out. Log in again to access this endpoint."));
 
 		mockMvc.perform(put("/customer/password").contentType(MediaType.APPLICATION_JSON_UTF8_VALUE)
 				.header("authorization", "Bearer auth")
 				.content("{\"old_password\":\"oldPwd\", \"new_password\":\"newPwd\"}"))
 				.andExpect(status().isForbidden()).andExpect(jsonPath("code").value("ATHR-002"));
-		verify(mockCustomerDAO, times(1)).getCustomerAuthEntityTokenByUUID("auth");
-		verify(mockCustomerService, times(0)).updateCustomerPassword(any(), any(), any());
+		verify(mockCustomerDAO, times(0)).getCustomerAuthEntityTokenByUUID( any());
+		verify(mockCustomerService, times(1)).updateCustomerPassword(any(), any(), any());
 	}
 
 	// This test case passes when you have handled the exception of trying to update
 	// your password but your session is
 	// already expired.
 	public void shouldUpdateCustomerPasswordIfSessionIsExpired() throws Exception {
-		when(mockCustomerService.checkCustomerEntityValidity(any())).thenThrow(new AuthorizationFailedException(
+		when(mockCustomerService.updateCustomerPassword(anyString(), anyString(), anyString())).thenThrow(new AuthorizationFailedException(
 				"ATHR-003", "Your session is expired. Log in again to access this endpoint."));
 
 		mockMvc.perform(put("/customer/password").contentType(MediaType.APPLICATION_JSON_UTF8_VALUE)
 				.header("authorization", "Bearer auth")
 				.content("{\"old_password\":\"oldPwd\", \"new_password\":\"newPwd\"}"))
 				.andExpect(status().isForbidden()).andExpect(jsonPath("code").value("ATHR-003"));
-		verify(mockCustomerDAO, times(1)).getCustomerAuthEntityTokenByUUID("auth");
-		verify(mockCustomerService, times(0)).updateCustomerPassword(any(), any(), any());
+		verify(mockCustomerDAO, times(1)).getCustomerAuthEntityTokenByUUID(anyString());
+		verify(mockCustomerService, times(0)).updateCustomerPassword(anyString(), anyString(), anyString());
 	}
 
 	// This test case passes when you have handled the exception of trying to update
@@ -443,16 +441,15 @@ public class CustomerControllerTest {
 	// password is weak.
 	@Test
 	public void shouldNotUpdateCustomerPasswordIfNewPasswordDoesNotFollowRecommendedPasswordFormat() throws Exception {
-		final CustomerEntity customerEntity = new CustomerEntity();
-		when(mockCustomerDAO.getCustomerAuthEntityTokenByUUID("auth")).thenReturn(getCustomerAuthTokenEntity());
-		when(mockCustomerService.updateCustomerPassword("oldPwd", "newPwd", "auth"))
+		when(mockCustomerDAO.getCustomerAuthEntityTokenByUUID(anyString())).thenReturn(getCustomerAuthTokenEntity());
+		when(mockCustomerService.updateCustomerPassword(anyString(), anyString(), anyString()))
 				.thenThrow(new UpdateCustomerException("UCR-001", "Weak password!"));
 		mockMvc.perform(put("/customer/password").contentType(MediaType.APPLICATION_JSON_UTF8_VALUE)
 				.header("authorization", "Bearer auth")
 				.content("{\"old_password\":\"oldPwd\", \"new_password\":\"newPwd\"}"))
 				.andExpect(status().isBadRequest()).andExpect(jsonPath("code").value("UCR-001"));
 		verify(mockCustomerDAO, times(0)).getCustomerAuthEntityTokenByUUID("auth");
-		verify(mockCustomerService, times(1)).updateCustomerPassword("oldPwd", "newPwd", "auth");
+		verify(mockCustomerService, times(1)).updateCustomerPassword(anyString(), anyString(), anyString());
 	}
 
 	private CustomerAuthTokenEntity getCustomerAuthTokenEntity() {
