@@ -13,8 +13,20 @@ public class CategoryService {
     @Autowired
     private CategoryDao categoryDao;
 
-public List<CategoryEntity> getAllCategories() {
-    return categoryDao.getAllCategories();
-}
+    public List<CategoryEntity> getAllCategories() {
+        return categoryDao.getAllCategories();
+    }
+
+    public CategoryEntity getCategoryById(String uuid) {
+        CategoryEntity categoryEntity = categoryDao.getCategoryById(uuid);
+//        if(uuid == "") {
+//
+//        } else if(categoryEntity == null) {
+//
+//        } else {
+//            return categoryEntity;
+//        }
+        return categoryEntity;
+    }
 
 }
