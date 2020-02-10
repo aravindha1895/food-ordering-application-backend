@@ -52,7 +52,7 @@ public class RestaurantService {
             throw new RestaurantNotFoundException("RNF-002", "Restaurant id field should not be empty");
         } else if(existingRestaurantEntity == null) {
             throw new RestaurantNotFoundException("RNF-001","No restaurant by this id");
-        } else if(restaurantEntity.getCustomer_rating() == null || (restaurantEntity.getCustomer_rating().compareTo(new BigDecimal("0")) != 1 && restaurantEntity.getCustomer_rating().compareTo(new BigDecimal("6")) != -1 ) ) {
+        } else if(restaurantEntity.getCustomer_rating() == null || !(restaurantEntity.getCustomer_rating().compareTo(new BigDecimal(0)) > 0 && restaurantEntity.getCustomer_rating().compareTo(new BigDecimal(6)) < 0 ) ) {
             throw new InvalidRatingException("IRE-001","Restaurant should be in the range of 1 to 5");
         }
         int numOfCustomersRated = existingRestaurantEntity.getNumber_of_customers_rated() + 1;
