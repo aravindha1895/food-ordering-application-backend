@@ -8,6 +8,7 @@ import com.upgrad.FoodOrderingApp.service.businness.StateService;
 import com.upgrad.FoodOrderingApp.service.entity.AddressEntity;
 import com.upgrad.FoodOrderingApp.service.entity.CustomerEntity;
 import com.upgrad.FoodOrderingApp.service.entity.StateEntity;
+import com.upgrad.FoodOrderingApp.service.exception.AddressNotFoundException;
 import com.upgrad.FoodOrderingApp.service.exception.AuthorizationFailedException;
 import com.upgrad.FoodOrderingApp.service.exception.SaveAddressException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 public class AddressController {
@@ -66,7 +68,7 @@ public class AddressController {
 
     }
 
-    @CrossOrigin
+    /*@CrossOrigin
     @GetMapping(value="/address/customer",produces=MediaType.APPLICATION_JSON_UTF8_VALUE)
     public @ResponseBody ResponseEntity<AddressListResponse> retrieveAllAddressForUser(
             @RequestHeader("authorization") final String accessToken){
@@ -88,7 +90,27 @@ public class AddressController {
                     .stateName(stateEntity.getState_name()));
         }
         return new ResponseEntity<AddressListResponse>(response,HttpStatus.OK);
-    }
+    }*/
+
+    @CrossOrigin
+    @DeleteMapping(value="/address/{address_id}",produces=MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public @ResponseBody ResponseEntity<DeleteAddressResponse> deleteAddressById(
+            @RequestHeader("authorization") final String accessToken,
+            @PathVariable final String address_id) throws AddressNotFoundException {
+
+        String bearerToken = null;
+        try {
+            bearerToken = accessToken.split("Bearer ")[1];
+        } catch (ArrayIndexOutOfBoundsException e) {
+            bearerToken = accessToken;
+        }
+
+        AddressEntity deletedEntity = addressService.deleteAddressById(address_id);
+
+        return new ResponseEntity<DeleteAddressResponse>(
+                new DeleteAddressResponse().id(UUID.fromString(deletedEntity.getUuid())).
+                        status("ADDRESS DELETED SUCCESSFULLY"),
+                HttpStatus.OK);    }
 
     @CrossOrigin
     @GetMapping(value="/states",produces=MediaType.APPLICATION_JSON_UTF8_VALUE)

@@ -6,6 +6,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+@NamedQueries({
+        @NamedQuery(name = "deleteAddressById", query = "delete from AddressEntity a where a.uuid=:addressuuid"),
+        @NamedQuery(name = "archiveAddressById", query = "update AddressEntity a set a.active = 0 where a.uuid=:addressuuid"),
+        @NamedQuery(name = "getAddressById", query = "select a from AddressEntity a where a.uuid=:addressuuid")
+})
+
 @Entity
 @Table(name="address")
 public class AddressEntity {
