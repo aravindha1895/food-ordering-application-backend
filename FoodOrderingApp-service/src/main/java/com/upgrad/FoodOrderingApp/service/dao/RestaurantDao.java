@@ -1,5 +1,6 @@
 package com.upgrad.FoodOrderingApp.service.dao;
 
+import com.upgrad.FoodOrderingApp.service.entity.CustomerAuthTokenEntity;
 import com.upgrad.FoodOrderingApp.service.entity.RestaurantEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Repository;
@@ -27,6 +28,14 @@ public class RestaurantDao {
     public RestaurantEntity getRestaurantById(String restUuid) {
         try {
             return entityManager.createNamedQuery("restByUuid", RestaurantEntity.class).setParameter("uuid", restUuid).getSingleResult();
+        } catch(NoResultException nre) {
+            return null;
+        }
+    }
+
+    public CustomerAuthTokenEntity getUserAuthToken(final String accessToken) {
+        try {
+            return entityManager.createNamedQuery("userAuthTokenByAccessToken", CustomerAuthTokenEntity.class).setParameter("accessToken", accessToken).getSingleResult();
         } catch(NoResultException nre) {
             return null;
         }

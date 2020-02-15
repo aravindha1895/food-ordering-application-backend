@@ -1,7 +1,9 @@
 package com.upgrad.FoodOrderingApp.service.businness;
 
 import com.upgrad.FoodOrderingApp.service.dao.RestaurantDao;
+import com.upgrad.FoodOrderingApp.service.entity.CustomerAuthTokenEntity;
 import com.upgrad.FoodOrderingApp.service.entity.RestaurantEntity;
+import com.upgrad.FoodOrderingApp.service.exception.AuthorizationFailedException;
 import com.upgrad.FoodOrderingApp.service.exception.InvalidRatingException;
 import com.upgrad.FoodOrderingApp.service.exception.RestaurantNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +12,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.time.ZonedDateTime;
 import java.util.List;
 
 @Service
@@ -44,10 +47,15 @@ public class RestaurantService {
     }
 
     @Transactional(propagation = Propagation.REQUIRED)
-    public RestaurantEntity updateRestaurantDetails(RestaurantEntity restaurantEntity) throws RestaurantNotFoundException,InvalidRatingException {
+    public RestaurantEntity updateRestaurantDetails(RestaurantEntity restaurantEntity, String authorization) throws RestaurantNotFoundException,InvalidRatingException,AuthorizationFailedException {
+        CustomerAuthTokenEntity userAuthToken = restaurantDao.getUserAuthToken(authorization);
         RestaurantEntity existingRestaurantEntity =  restaurantDao.getRestaurantById(restaurantEntity.getUuid());
-        if(true==false) {
-
+        if(userAuthToken == null) {
+            throw new AuthorizationFailedException("ATHR-001","Customer is not Logged in.");
+        } else if(userAuthToken.getLogoutAt() != null) {
+            throw new AuthorizationFailedException("ATHR-002","Customer is logged out. Log in again to access this endpoint.");
+        } else if(userAuthToken.getExpiresAt().isBefore(ZonedDateTime.now())) {
+            throw new AuthorizationFailedException("ATHR-003","Your session is expired. Log in again to access this endpoint.");
         } else if(restaurantEntity.getUuid() == "") {
             throw new RestaurantNotFoundException("RNF-002", "Restaurant id field should not be empty");
         } else if(existingRestaurantEntity == null) {

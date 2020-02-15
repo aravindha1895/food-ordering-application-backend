@@ -11,10 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,6 +24,7 @@ public class CategoryController {
     @Autowired
     private CategoryService categoryService;
 
+    @CrossOrigin
     @RequestMapping(method = RequestMethod.GET, path = "/category", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<ArrayList> getAllCategories() {
         List<CategoryEntity> categoryEntity = categoryService.getAllCategories();
@@ -40,6 +38,7 @@ public class CategoryController {
         return new ResponseEntity<ArrayList>((ArrayList)categoryListResponse,HttpStatus.OK);
     }
 
+    @CrossOrigin
     @RequestMapping(method = RequestMethod.GET, path = "/category/{category_id}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<CategoryDetailsResponse> getCategoryById(@PathVariable final String category_id) throws CategoryNotFoundException {
         CategoryEntity categoryEntity = categoryService.getCategoryById(category_id);
