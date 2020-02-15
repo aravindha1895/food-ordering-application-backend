@@ -1,15 +1,15 @@
 package com.upgrad.FoodOrderingApp.api.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.upgrad.FoodOrderingApp.api.interceptor.service.businness.AddressService;
+import com.upgrad.FoodOrderingApp.api.interceptor.service.businness.CustomerService;
+import com.upgrad.FoodOrderingApp.api.interceptor.service.entity.AddressEntity;
+import com.upgrad.FoodOrderingApp.api.interceptor.service.entity.CustomerEntity;
+import com.upgrad.FoodOrderingApp.api.interceptor.service.entity.StateEntity;
 import com.upgrad.FoodOrderingApp.api.model.AddressList;
 import com.upgrad.FoodOrderingApp.api.model.AddressListResponse;
 import com.upgrad.FoodOrderingApp.api.model.StatesList;
 import com.upgrad.FoodOrderingApp.api.model.StatesListResponse;
-import com.upgrad.FoodOrderingApp.service.businness.AddressService;
-import com.upgrad.FoodOrderingApp.service.businness.CustomerService;
-import com.upgrad.FoodOrderingApp.service.entity.AddressEntity;
-import com.upgrad.FoodOrderingApp.service.entity.CustomerEntity;
-import com.upgrad.FoodOrderingApp.service.entity.StateEntity;
 import com.upgrad.FoodOrderingApp.service.exception.AddressNotFoundException;
 import com.upgrad.FoodOrderingApp.service.exception.AuthorizationFailedException;
 import com.upgrad.FoodOrderingApp.service.exception.SaveAddressException;
