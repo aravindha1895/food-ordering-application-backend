@@ -2,6 +2,8 @@ package com.upgrad.FoodOrderingApp.service.entity;
 
 import javax.persistence.*;
 import javax.validation.constraints.Size;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -42,6 +44,9 @@ public class AddressEntity {
     @ManyToOne
     @JoinColumn(name = "STATE_ID")
     private StateEntity stateEntity;
+
+    @ManyToMany(mappedBy = "address", fetch = FetchType.LAZY)
+    private List<CustomerEntity> restaurant = new ArrayList<CustomerEntity>();
 
     public StateEntity getStateEntity() {
         return stateEntity;

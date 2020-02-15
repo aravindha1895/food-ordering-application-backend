@@ -194,4 +194,10 @@ public class CustomerService {
 		}
 		return true;
 	}
+
+	public CustomerEntity getCustomerByToken(String accessToken) {
+		CustomerAuthTokenEntity customerAuthTokenEntity = null;
+		customerAuthTokenEntity = customerDAO.getUserAuthToken(accessToken);
+			return customerAuthTokenEntity.getUser();
+	}
 }

@@ -3,8 +3,10 @@ package com.upgrad.FoodOrderingApp.api.controller;
 import com.upgrad.FoodOrderingApp.api.model.*;
 import com.upgrad.FoodOrderingApp.api.util.Validators;
 import com.upgrad.FoodOrderingApp.service.businness.AddressService;
+import com.upgrad.FoodOrderingApp.service.businness.CustomerService;
 import com.upgrad.FoodOrderingApp.service.businness.StateService;
 import com.upgrad.FoodOrderingApp.service.entity.AddressEntity;
+import com.upgrad.FoodOrderingApp.service.entity.CustomerEntity;
 import com.upgrad.FoodOrderingApp.service.entity.StateEntity;
 import com.upgrad.FoodOrderingApp.service.exception.AuthorizationFailedException;
 import com.upgrad.FoodOrderingApp.service.exception.SaveAddressException;
@@ -26,6 +28,9 @@ public class AddressController {
 
     @Autowired
     AddressService addressService;
+
+    @Autowired
+    CustomerService customerService;
 
     @CrossOrigin
     @PostMapping(value = "/address", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE,
@@ -59,6 +64,30 @@ public class AddressController {
                         status("ADDRESS SUCCESSFULLY REGISTERED"),
                 HttpStatus.CREATED);
 
+    }
+
+    @CrossOrigin
+    @GetMapping(value="/address/customer",produces=MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public @ResponseBody ResponseEntity<AddressListResponse> retrieveAllAddressForUser(
+            @RequestHeader("authorization") final String accessToken){
+
+        String bearerToken = null;
+        try {
+            bearerToken = accessToken.split("Bearer ")[1];
+        } catch (ArrayIndexOutOfBoundsException e) {
+            bearerToken = accessToken;
+        }
+
+        CustomerEntity customerEntity = customerService.getCustomerByToken(bearerToken);
+
+        List<AddressEntity> addressEntities = addressService.();
+        StatesListResponse response = new StatesListResponse();
+        for(StateEntity stateEntity: stateEntities) {
+            response.addStatesItem(new StatesList()
+                    .id(stateEntity.getUuid())
+                    .stateName(stateEntity.getState_name()));
+        }
+        return new ResponseEntity<AddressListResponse>(response,HttpStatus.OK);
     }
 
     @CrossOrigin
