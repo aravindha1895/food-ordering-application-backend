@@ -4,7 +4,10 @@ import javax.persistence.*;
 import javax.validation.constraints.Size;
 import java.util.UUID;
 
-@NamedQueries({ @NamedQuery(name = "getAllStates", query = "select s from StateEntity s")})
+@NamedQueries({
+        @NamedQuery(name = "getAllStates", query = "select s from StateEntity s"),
+        @NamedQuery(name = "getStateById", query = "select s from StateEntity s where s.uuid=:stateuuid")
+})
 
 @Entity
 @Table(name = "state")
