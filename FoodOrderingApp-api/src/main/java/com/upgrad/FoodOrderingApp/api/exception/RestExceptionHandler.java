@@ -51,6 +51,7 @@ public class RestExceptionHandler {
 	@ExceptionHandler(NullPointerException.class)
 	public ResponseEntity<ErrorResponse> nullPointerException(NullPointerException exe,
 			WebRequest request)  {
+		exe.printStackTrace();
 		return new ResponseEntity<ErrorResponse>(new ErrorResponse().code("Internal server error").message(exe.getMessage()),
 				HttpStatus.INTERNAL_SERVER_ERROR);
 	}
