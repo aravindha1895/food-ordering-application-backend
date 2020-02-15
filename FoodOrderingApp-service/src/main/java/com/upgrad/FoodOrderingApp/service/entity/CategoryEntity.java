@@ -71,12 +71,4 @@ public class CategoryEntity {
     public void setCategory_name(String category_name) {
         this.category_name = category_name;
     }
-
-    public List<RestaurantEntity> getRestaurants() {
-        return restaurant;
-    }
-
-    public void setRestaurants(List<RestaurantEntity> restaurants) {
-        this.restaurant = restaurants;
-    }
 }
