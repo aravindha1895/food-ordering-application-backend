@@ -10,8 +10,11 @@ import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
-@NamedQueries({ @NamedQuery(name = "getCouponDetailByName", query = "select c from CouponEntity c where c.couponName = :coupon_name"),
-		@NamedQuery(name = "getCouponDetailById", query = "select c from CouponEntity c where c.id = :id")})
+@NamedQueries(
+		{
+			@NamedQuery(name = "getCouponDetailByName", query = "select c from CouponEntity c where c.couponName = :coupon_name"),
+			@NamedQuery(name = "getCouponById", query = "select c from CouponEntity c where c.uuid=:couponUuid")
+		})
 
 @Entity
 @Table(name = "coupon")

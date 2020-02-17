@@ -60,6 +60,14 @@ public class CustomerEntity implements Serializable {
 	@ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	private List<AddressEntity> address = new ArrayList<AddressEntity>();
 
+	public List<AddressEntity> getAddress() {
+		return address;
+	}
+
+	public void setAddress(List<AddressEntity> address) {
+		this.address = address;
+	}
+
 	public long getId() {
 		return id;
 	}

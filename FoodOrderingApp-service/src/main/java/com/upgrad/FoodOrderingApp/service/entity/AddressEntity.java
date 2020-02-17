@@ -12,6 +12,7 @@ import java.util.UUID;
         @NamedQuery(name = "getAddressById", query = "select a from AddressEntity a where a.uuid=:addressuuid")
 })
 
+
 @Entity
 @Table(name="address")
 public class AddressEntity {
@@ -51,8 +52,16 @@ public class AddressEntity {
     @JoinColumn(name = "STATE_ID")
     private StateEntity stateEntity;
 
-    @ManyToMany(mappedBy = "address", fetch = FetchType.LAZY)
-    private List<CustomerEntity> restaurant = new ArrayList<CustomerEntity>();
+    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<CustomerEntity> customer = new ArrayList<CustomerEntity>();
+
+    public List<CustomerEntity> getCustomer() {
+        return customer;
+    }
+
+    public void setCustomer(List<CustomerEntity> customer) {
+        this.customer = customer;
+    }
 
     public StateEntity getStateEntity() {
         return stateEntity;
