@@ -8,6 +8,13 @@ import javax.validation.constraints.Size;
 import java.util.ArrayList;
 import java.util.List;
 
+@NamedQueries(
+        {
+                @NamedQuery(name = "getItemById", query = "select i from ItemEntity i where i.uuid=:itemUuid")
+        }
+)
+
+
 @Entity
 @Table(name = "item")
 public class ItemEntity {

@@ -9,6 +9,8 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 @NamedQueries({
 		@NamedQuery(name = "customerByPhoneNumber", query = "select c from CustomerEntity c where c.contactNumber = :contact_number"),
@@ -54,6 +56,17 @@ public class CustomerEntity implements Serializable {
 	@NotNull
 	@Size(max = 200)
 	private String contactNumber;
+
+	@ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	private List<AddressEntity> address = new ArrayList<AddressEntity>();
+
+	public List<AddressEntity> getAddress() {
+		return address;
+	}
+
+	public void setAddress(List<AddressEntity> address) {
+		this.address = address;
+	}
 
 	public long getId() {
 		return id;
