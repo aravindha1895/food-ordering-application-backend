@@ -5,6 +5,10 @@ import javax.validation.constraints.Size;
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
 
+@NamedQueries({
+        @NamedQuery(name = "fetchAllOrders", query = "select a from OrderEntity o where o.customer_id=:customerId")
+})
+
 @Entity
 @Table(name = "orders")
 public class OrderEntity {
