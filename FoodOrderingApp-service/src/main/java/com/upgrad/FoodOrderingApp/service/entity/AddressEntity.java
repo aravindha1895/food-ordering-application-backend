@@ -134,4 +134,10 @@ public class AddressEntity {
     public void setRestaurantEntity(RestaurantEntity restaurantEntity) {
         this.restaurantEntity = restaurantEntity;
     }
+
+    public void setFlatBuilNo(String flatBuildNo) {
+    }
+
+    public void setState(StateEntity state) {
+    }
 }

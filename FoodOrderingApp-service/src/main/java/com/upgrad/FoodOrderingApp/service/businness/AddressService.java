@@ -4,6 +4,7 @@ import com.upgrad.FoodOrderingApp.service.dao.AddressDAO;
 import com.upgrad.FoodOrderingApp.service.dao.OrderDAO;
 import com.upgrad.FoodOrderingApp.service.dao.StateDAO;
 import com.upgrad.FoodOrderingApp.service.entity.AddressEntity;
+import com.upgrad.FoodOrderingApp.service.entity.CustomerEntity;
 import com.upgrad.FoodOrderingApp.service.entity.OrderEntity;
 import com.upgrad.FoodOrderingApp.service.entity.StateEntity;
 import com.upgrad.FoodOrderingApp.service.exception.AddressNotFoundException;
@@ -28,6 +29,8 @@ public class AddressService {
     @Autowired
     OrderDAO orderDAO;
 
+
+
     @Transactional(propagation = Propagation.REQUIRED)
     public AddressEntity saveAddress(AddressEntity address, String uuId) throws SaveAddressException {
 
@@ -46,10 +49,6 @@ public class AddressService {
         return addressDAO.saveAddress(address);
 
     }
-
-    /*public List<AddressEntity> fetchAllAddressByCustomerId(String customerId){
-        return addressDAO.getAllStates(customerId);
-    }*/
 
     public AddressEntity deleteAddressById(String addressId) throws AddressNotFoundException {
         if(addressId.isEmpty())
@@ -102,6 +101,28 @@ public class AddressService {
         return stateDAO.getStateById(uuId);
     }
 
+    public StateEntity getStateByUUID(String testUUID) {
+        return stateDAO.getStateById(testUUID);
+    }
+
+    public AddressEntity getAddressByUUID(String s, CustomerEntity customerEntity) {
+        return addressDAO.getAddressById(s);
+    }
+
+    public AddressEntity deleteAddress(AddressEntity addressEntity) {
+        List<OrderEntity> ordersByAddressId = orderDAO.fetchOrderByAddress(addressEntity.getUuid());
+        if(ordersByAddressId.size()>0)
+            return addressDAO.archiveAddressById(addressEntity.getUuid());
+        return addressDAO.deleteAddressById(addressEntity.getUuid());
+    }
+
+    public List<AddressEntity> getAllAddress(CustomerEntity customerEntity) {
+        return customerEntity.getAddress();
+    }
+
+    public List<StateEntity> getAllStates() {
+        return stateDAO.getAllStates();
+    }
 }
 
 
