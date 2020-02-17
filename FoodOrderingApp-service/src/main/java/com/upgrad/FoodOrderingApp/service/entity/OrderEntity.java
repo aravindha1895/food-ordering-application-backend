@@ -8,7 +8,8 @@ import java.math.BigDecimal;
 import java.time.ZonedDateTime;
 
 @NamedQueries({
-        @NamedQuery(name = "fetchAllOrders", query = "select a from OrderEntity o where o.customer_id=:customerId")
+        @NamedQuery(name = "fetchAllOrders", query = "select a from OrderEntity o where o.customer_id=:customerId"),
+        @NamedQuery(name = "fetchOrderByAddress", query = "select a from OrderEntity o where o.address_id=:addressId")
 })
 
 @Entity

@@ -54,4 +54,15 @@ public class OrderDAO {
             return null;
         }
     }
+
+    public List<OrderEntity> fetchOrderByAddress(String addressId){
+        try {
+            return entityManager.createNamedQuery("fetchOrderByAddress", OrderEntity.class)
+                    .setParameter("address_id", addressId).getResultList();
+        } catch (NoResultException nre) {
+            return null;
+        }
+    }
+
+
 }
