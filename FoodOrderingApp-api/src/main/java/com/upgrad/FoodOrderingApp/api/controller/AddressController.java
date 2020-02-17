@@ -68,7 +68,7 @@ public class AddressController {
 
     }
 
-    /*@CrossOrigin
+    @CrossOrigin
     @GetMapping(value="/address/customer",produces=MediaType.APPLICATION_JSON_UTF8_VALUE)
     public @ResponseBody ResponseEntity<AddressListResponse> retrieveAllAddressForUser(
             @RequestHeader("authorization") final String accessToken){
@@ -81,16 +81,21 @@ public class AddressController {
         }
 
         CustomerEntity customerEntity = customerService.getCustomerByToken(bearerToken);
-
-        List<AddressEntity> addressEntities = addressService.();
-        StatesListResponse response = new StatesListResponse();
-        for(StateEntity stateEntity: stateEntities) {
-            response.addStatesItem(new StatesList()
-                    .id(stateEntity.getUuid())
-                    .stateName(stateEntity.getState_name()));
+        AddressListResponse response = new AddressListResponse();
+        for(AddressEntity addressEntity : customerEntity.getAddress()){
+            response.addAddressesItem(new AddressList().
+                    city(addressEntity.getCity()).
+                    flatBuildingName(addressEntity.getFlat_buil_number()).
+                    locality(addressEntity.getLocality()).
+                    city(addressEntity.getCity()).
+                    pincode(addressEntity.getPincode()).
+                    state(new AddressListState().
+                            stateName(addressEntity.getStateEntity().getState_name()).
+                            id(addressEntity.getStateEntity().getUuid())));
         }
+
         return new ResponseEntity<AddressListResponse>(response,HttpStatus.OK);
-    }*/
+    }
 
     @CrossOrigin
     @DeleteMapping(value="/address/{address_id}",produces=MediaType.APPLICATION_JSON_UTF8_VALUE)
