@@ -1,5 +1,7 @@
 package com.upgrad.FoodOrderingApp.service.entity;
 
+import org.hibernate.annotations.ManyToAny;
+
 import javax.persistence.*;
 import javax.validation.constraints.Size;
 import java.math.BigDecimal;
@@ -27,7 +29,7 @@ public class OrderEntity {
     @Column(name = "DATE")
     private ZonedDateTime date;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "COUPON_ID")
     private CouponEntity couponEntity;
 
@@ -35,15 +37,15 @@ public class OrderEntity {
     @JoinColumn(name = "PAYMENT_ID")
     private PaymentEntity paymentEntity;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "CUSTOMER_ID")
     private CustomerEntity customerEntity;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "RESTAURANT_ID")
     private RestaurantEntity restaurantEntity;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "ADDRESS_ID")
     private AddressEntity addressEntity;
 
