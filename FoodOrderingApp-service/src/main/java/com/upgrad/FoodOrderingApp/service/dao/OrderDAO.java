@@ -4,6 +4,8 @@ import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 
+import com.upgrad.FoodOrderingApp.service.entity.OrderEntity;
+import com.upgrad.FoodOrderingApp.service.entity.OrderItemEntity;
 import org.springframework.stereotype.Repository;
 
 import com.upgrad.FoodOrderingApp.service.entity.CouponEntity;
@@ -21,6 +23,23 @@ public class OrderDAO {
 		} catch (NoResultException nre) {
 			return null;
 		}
+	}
 
+	public CouponEntity getCouponById(String uuid) {
+		try {
+			return entityManager.createNamedQuery("getCouponById", CouponEntity.class).setParameter("couponUuid", uuid).getSingleResult();
+		} catch(NoResultException nre) {
+			return null;
+		}
+	}
+
+	public OrderEntity postOrder(OrderEntity orderEntity) {
+		entityManager.persist(orderEntity);
+		return orderEntity;
+	}
+
+	public OrderItemEntity postOrderItem(OrderItemEntity orderItemEntity) {
+		entityManager.persist(orderItemEntity);
+		return orderItemEntity;
 	}
 }

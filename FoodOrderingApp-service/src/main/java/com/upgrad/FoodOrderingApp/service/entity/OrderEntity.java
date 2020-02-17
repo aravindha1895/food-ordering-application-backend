@@ -7,6 +7,13 @@ import javax.validation.constraints.Size;
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
 
+@NamedQueries(
+        {
+                @NamedQuery(name = "getOrdersByRestaurantId", query = "select o from OrderEntity o where  o.restaurantEntity=:restEntity")
+        }
+)
+
+
 @Entity
 @Table(name = "orders")
 public class OrderEntity {
