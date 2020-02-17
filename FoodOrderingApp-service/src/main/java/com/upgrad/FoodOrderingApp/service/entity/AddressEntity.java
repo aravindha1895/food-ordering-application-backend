@@ -2,7 +2,16 @@ package com.upgrad.FoodOrderingApp.service.entity;
 
 import javax.persistence.*;
 import javax.validation.constraints.Size;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
+
+@NamedQueries({
+        @NamedQuery(name = "deleteAddressById", query = "delete from AddressEntity a where a.uuid=:addressuuid"),
+        @NamedQuery(name = "archiveAddressById", query = "update AddressEntity a set a.active = 0 where a.uuid=:addressuuid"),
+        @NamedQuery(name = "getAddressById", query = "select a from AddressEntity a where a.uuid=:addressuuid")
+})
+
 
 @Entity
 @Table(name="address")
@@ -42,6 +51,17 @@ public class AddressEntity {
     @ManyToOne
     @JoinColumn(name = "STATE_ID")
     private StateEntity stateEntity;
+
+    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<CustomerEntity> customer = new ArrayList<CustomerEntity>();
+
+    public List<CustomerEntity> getCustomer() {
+        return customer;
+    }
+
+    public void setCustomer(List<CustomerEntity> customer) {
+        this.customer = customer;
+    }
 
     public StateEntity getStateEntity() {
         return stateEntity;

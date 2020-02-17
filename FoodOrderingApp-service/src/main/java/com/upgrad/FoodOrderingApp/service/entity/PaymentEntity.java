@@ -9,7 +9,13 @@ import javax.persistence.*;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
-@NamedQueries({ @NamedQuery(name = "getAllPaymentMethods", query = "select p from PaymentEntity p")})
+@NamedQueries(
+		{
+				@NamedQuery(name = "getAllPaymentMethods", query = "select p from PaymentEntity p"),
+				@NamedQuery(name = "getPaymentById", query = "select p from PaymentEntity p where p.uuid=:paymentUuid")
+		}
+
+)
 
 @Entity
 @Table(name = "payment")

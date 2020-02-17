@@ -3,12 +3,16 @@ package com.upgrad.FoodOrderingApp.service.entity;
 import javax.persistence.*;
 import javax.validation.constraints.Size;
 
+@NamedQueries({
+        @NamedQuery(name = "fetchItemDetails", query = "select a from OrderItemEntity o where o.order_id=:orderId")
+})
+
 @Entity
 @Table(name = "order_item")
 public class OrderItemEntity {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ID")
     private int id;
 
