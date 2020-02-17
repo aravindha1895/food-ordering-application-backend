@@ -25,6 +25,13 @@ public class StateEntity {
     @Size(max = 30)
     private String state_name;
 
+    public StateEntity(String stateUuid, String stateName) {
+        this.uuid = UUID.fromString(stateUuid);
+        this.state_name = stateName;
+    }
+
+    public StateEntity(){}
+
     public Integer getId() {
         return id;
     }
