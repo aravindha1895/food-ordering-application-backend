@@ -71,6 +71,8 @@ public class CustomerService {
 			customerAuthTokenEntity = customerDAO.getCustomerAuthEntityTokenByUUID(customerEntity.getUuid());
 			if (customerAuthTokenEntity != null) {
 				isDataAlreadyExists = true;
+			} else {
+				customerAuthTokenEntity = new CustomerAuthTokenEntity();
 			}
 			customerAuthTokenEntity.setUser(customerEntity);
 			final ZonedDateTime now = ZonedDateTime.now();
