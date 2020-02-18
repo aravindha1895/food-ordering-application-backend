@@ -1,10 +1,9 @@
 package com.upgrad.FoodOrderingApp.service.entity;
 
 import javax.persistence.*;
-import javax.validation.constraints.Size;
 
 @NamedQueries({
-        @NamedQuery(name = "fetchItemDetails", query = "select a from OrderItemEntity o where o.order_id=:orderId")
+        @NamedQuery(name = "fetchItemDetails", query = "select o from OrderItemEntity o where o.orderEntity=:orderId")
 })
 
 @Entity

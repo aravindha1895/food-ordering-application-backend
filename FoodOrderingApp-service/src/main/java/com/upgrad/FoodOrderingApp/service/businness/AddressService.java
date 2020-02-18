@@ -1,9 +1,9 @@
 package com.upgrad.FoodOrderingApp.service.businness;
 
 import com.upgrad.FoodOrderingApp.service.dao.AddressDAO;
-import com.upgrad.FoodOrderingApp.service.dao.OrderDAO;
 import com.upgrad.FoodOrderingApp.service.dao.StateDAO;
 import com.upgrad.FoodOrderingApp.service.entity.AddressEntity;
+import com.upgrad.FoodOrderingApp.service.dao.OrderDAO;
 import com.upgrad.FoodOrderingApp.service.entity.CustomerEntity;
 import com.upgrad.FoodOrderingApp.service.entity.OrderEntity;
 import com.upgrad.FoodOrderingApp.service.entity.StateEntity;
@@ -13,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -28,7 +27,6 @@ public class AddressService {
 
     @Autowired
     OrderDAO orderDAO;
-
 
 
     @Transactional(propagation = Propagation.REQUIRED)
@@ -50,6 +48,7 @@ public class AddressService {
 
     }
 
+
     public AddressEntity deleteAddressById(String addressId) throws AddressNotFoundException {
         if(addressId.isEmpty())
             throw new AddressNotFoundException("ANF-005",
@@ -60,6 +59,7 @@ public class AddressService {
         if(addressEntity==null)
             throw new AddressNotFoundException("ANF-003",
                     "No address by this id");
+
 
         /**
          * id this address is not used in any orders
@@ -101,6 +101,7 @@ public class AddressService {
         return stateDAO.getStateById(uuId);
     }
 
+
     public StateEntity getStateByUUID(String testUUID) {
         return stateDAO.getStateById(testUUID);
     }
@@ -124,5 +125,3 @@ public class AddressService {
         return stateDAO.getAllStates();
     }
 }
-
-

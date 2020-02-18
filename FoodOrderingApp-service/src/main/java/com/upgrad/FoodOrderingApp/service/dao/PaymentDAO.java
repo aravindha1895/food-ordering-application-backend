@@ -17,4 +17,8 @@ public class PaymentDAO {
 	public List<PaymentEntity> getAllPaymentMethods() {
 		return entityManager.createNamedQuery("getAllPaymentMethods").getResultList();
 	}
+
+	public PaymentEntity getPaymentById(String uuid) {
+		return entityManager.createNamedQuery("getPaymentById", PaymentEntity.class).setParameter("paymentUuid",uuid).getSingleResult();
+	}
 }
