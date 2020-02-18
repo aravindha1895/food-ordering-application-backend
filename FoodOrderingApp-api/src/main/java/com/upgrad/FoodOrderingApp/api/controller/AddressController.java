@@ -110,6 +110,14 @@ public class AddressController {
             bearerToken = accessToken;
         }
 
+        CustomerEntity customerEntity = customerService.getCustomerByToken(bearerToken);
+
+        for(AddressEntity address : customerEntity.getAddress()){
+            if(!address.getUuid().equalsIgnoreCase(address_id))
+                throw new AddressNotFoundException("ATHR-004",
+                        "You are not authorized to view/update/delete any one else's address");
+            }
+
         AddressEntity deletedEntity = addressService.deleteAddressById(address_id);
 
         return new ResponseEntity<DeleteAddressResponse>(
