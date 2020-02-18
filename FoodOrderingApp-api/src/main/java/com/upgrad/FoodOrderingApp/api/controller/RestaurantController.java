@@ -10,17 +10,15 @@ import com.upgrad.FoodOrderingApp.service.exception.AuthorizationFailedException
 import com.upgrad.FoodOrderingApp.service.exception.CategoryNotFoundException;
 import com.upgrad.FoodOrderingApp.service.exception.InvalidRatingException;
 import com.upgrad.FoodOrderingApp.service.exception.RestaurantNotFoundException;
-import io.swagger.models.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.print.attribute.standard.Media;
-import java.awt.*;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
@@ -36,35 +34,23 @@ public class RestaurantController {
 
     @CrossOrigin
     @RequestMapping(method = RequestMethod.GET, path = "/restaurant",produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<ArrayList>getAllRestaurants() {
+    public ResponseEntity<RestaurantListResponse>getAllRestaurants() {
         final List<RestaurantEntity> restaurantEntities = restaurantService.getAllRestaurants();
-        List<RestaurantDetailsResponse> restaurantResponseDetails = new ArrayList<RestaurantDetailsResponse>();
-
+        List<RestaurantList> restaurantLists = new ArrayList<>();
+        RestaurantListResponse restaurantListResponse = new RestaurantListResponse();
         for(int i=0; i < restaurantEntities.size(); i++) {
             List<CategoryEntity> categoryEntities = restaurantEntities.get(i).getCategories();
-            List<CategoryList> categoriesList = new ArrayList<CategoryList>();
-
+            String categoryValues = "";
             for(int j = 0; j< categoryEntities.size(); j++){
-                CategoryList catList = new CategoryList();
-                catList.setCategoryName(categoryEntities.get(j).getCategory_name());
-                catList.setId(UUID.fromString(categoryEntities.get(j).getUuid()));
-
-                List<ItemEntity> itemEntities = categoryEntities.get(j).getItem();
-                List<ItemList> itemLists = new ArrayList<ItemList>();
-                for(int k = 0; k < itemEntities.size(); k++) {
-                    ItemList itemList = new ItemList();
-                    itemList.setId(UUID.fromString(itemEntities.get(k).getUuid()));
-                    itemList.setItemName(itemEntities.get(k).getItem_name());
-                    ItemList.ItemTypeEnum itemType = ItemList.ItemTypeEnum.values()[Integer.parseInt(itemEntities.get(k).getType())];
-                    itemList.setItemType(itemType);
-                    itemList.setPrice(itemEntities.get(k).getPrice());
-                    itemLists.add(itemList);
-                }
-                catList.setItemList(itemLists);
-                categoriesList.add(catList);
+                categoryValues = categoryValues + categoryEntities.get(j).getCategory_name() + ",";
+                categoryValues = categoryValues.replace(",$", "");
             }
-            restaurantResponseDetails.add(
-                    new RestaurantDetailsResponse()
+            String arr[] = categoryValues.split(",");
+            Arrays.sort(arr);
+            Arrays.toString(arr);
+            String joinedSortedCategoriesValues = String.join(",",arr);
+            restaurantLists.add(
+                    new RestaurantList()
                             .id(UUID.fromString(restaurantEntities.get(i).getUuid()))
                             .restaurantName(restaurantEntities.get(i).getRestaurant_name())
                             .photoURL(restaurantEntities.get(i).getPhoto_url())
@@ -83,42 +69,34 @@ public class RestaurantController {
                                             .stateName(restaurantEntities.get(i).getAddressEntity().getStateEntity().getState_name())
                                     )
                             )
-                            .categories(categoriesList)
+                            .categories(joinedSortedCategoriesValues)
             );
         }
-        return new ResponseEntity<ArrayList>((ArrayList)restaurantResponseDetails, HttpStatus.OK);
+        restaurantListResponse.setRestaurants(restaurantLists);
+        return new ResponseEntity(restaurantListResponse, HttpStatus.OK);
     }
 
     @CrossOrigin
     @RequestMapping(method = RequestMethod.GET, path = "/restaurant/name/{restaurant_name}",produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<ArrayList> getRestaurantsByName(@PathVariable("restaurant_name") final String restaurantName)throws RestaurantNotFoundException {
+    public ResponseEntity<RestaurantListResponse> getRestaurantsByName(@PathVariable("restaurant_name") final String restaurantName)throws RestaurantNotFoundException {
         String lowerrestaurantName = restaurantName.toLowerCase();
         final List<RestaurantEntity> restbyNameEntitiesList = restaurantService.getRestaurantsByName(lowerrestaurantName);
-        List<RestaurantDetailsResponse> restbyNameDetailsResponseList = new ArrayList<RestaurantDetailsResponse>();
+        List<RestaurantList> restaurantLists = new ArrayList<>();
+        RestaurantListResponse restaurantListResponse = new RestaurantListResponse();
         for(int i=0; i < restbyNameEntitiesList.size(); i++) {
             List<CategoryEntity> categoryEntities = restbyNameEntitiesList.get(i).getCategories();
-            List<CategoryList> categoriesList = new ArrayList<CategoryList>();
-
+            String categoryValues = "";
             for(int j = 0; j< categoryEntities.size(); j++){
-                CategoryList catList = new CategoryList();
-                catList.setCategoryName(categoryEntities.get(j).getCategory_name());
-                catList.setId(UUID.fromString(categoryEntities.get(j).getUuid()));
-                List<ItemEntity> itemEntities = categoryEntities.get(j).getItem();
-                List<ItemList> itemLists = new ArrayList<ItemList>();
-                for(int k = 0; k < itemEntities.size(); k++) {
-                    ItemList itemList = new ItemList();
-                    itemList.setId(UUID.fromString(itemEntities.get(k).getUuid()));
-                    itemList.setItemName(itemEntities.get(k).getItem_name());
-                    ItemList.ItemTypeEnum itemType = ItemList.ItemTypeEnum.values()[Integer.parseInt(itemEntities.get(k).getType())];
-                    itemList.setItemType(itemType);
-                    itemList.setPrice(itemEntities.get(k).getPrice());
-                    itemLists.add(itemList);
-                }
-                catList.setItemList(itemLists);
-                categoriesList.add(catList);
+                categoryValues = categoryValues + categoryEntities.get(j).getCategory_name() + ",";
+                categoryValues = categoryValues.replace(",$", "");
             }
-            restbyNameDetailsResponseList.add(
-                    new RestaurantDetailsResponse()
+            String arr[] = categoryValues.split(",");
+            Arrays.sort(arr);
+            Arrays.toString(arr);
+            String joinedSortedCategoriesValues = String.join(",",arr);
+
+            restaurantLists.add(
+                    new RestaurantList()
                             .id(UUID.fromString(restbyNameEntitiesList.get(i).getUuid()))
                             .restaurantName(restbyNameEntitiesList.get(i).getRestaurant_name())
                             .photoURL(restbyNameEntitiesList.get(i).getPhoto_url())
@@ -135,42 +113,34 @@ public class RestaurantController {
                                             .stateName(restbyNameEntitiesList.get(i).getAddressEntity().getStateEntity().getState_name())
                                     )
                             )
-                            .categories(categoriesList)
+                            .categories(joinedSortedCategoriesValues)
             );
         }
-        return new ResponseEntity<ArrayList>((ArrayList)restbyNameDetailsResponseList, HttpStatus.OK);
+        restaurantListResponse.setRestaurants(restaurantLists);
+        return new ResponseEntity(restaurantListResponse, HttpStatus.OK);
     }
 
     @CrossOrigin
     @RequestMapping(method = RequestMethod.GET, path = "/restaurant/category/{category_id}",produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<ArrayList> getRestaurantsByCategoryId(@PathVariable final String category_id) throws CategoryNotFoundException {
+    public ResponseEntity<RestaurantListResponse> getRestaurantsByCategoryId(@PathVariable final String category_id) throws CategoryNotFoundException {
         CategoryEntity categoryEntity = categoryService.getCategoryById(category_id);
         List<RestaurantEntity> restaurantEntities = categoryEntity.getRestaurant();
         List<RestaurantDetailsResponse> restaurantDetailsResponses = new ArrayList<RestaurantDetailsResponse>();
+        List<RestaurantList> restaurantLists = new ArrayList<>();
+        RestaurantListResponse restaurantListResponse = new RestaurantListResponse();
         for(int i=0; i < restaurantEntities.size(); i++) {
             List<CategoryEntity> categoryEntities = restaurantEntities.get(i).getCategories();
-            List<CategoryList> categoriesList = new ArrayList<CategoryList>();
+            String categoryValues = "";
             for (int j=0; j < categoryEntities.size(); j++) {
-                CategoryList catList = new CategoryList();
-                catList.setCategoryName(categoryEntities.get(j).getCategory_name());
-                catList.setId(UUID.fromString(categoryEntities.get(j).getUuid()));
-
-                List<ItemEntity> itemEntities = categoryEntities.get(j).getItem();
-                List<ItemList> itemLists = new ArrayList<ItemList>();
-                for(int k = 0; k < itemEntities.size(); k++) {
-                    ItemList itemList = new ItemList();
-                    itemList.setId(UUID.fromString(itemEntities.get(k).getUuid()));
-                    itemList.setItemName(itemEntities.get(k).getItem_name());
-                    ItemList.ItemTypeEnum itemType = ItemList.ItemTypeEnum.values()[Integer.parseInt(itemEntities.get(k).getType())];
-                    itemList.setItemType(itemType);
-                    itemList.setPrice(itemEntities.get(k).getPrice());
-                    itemLists.add(itemList);
-                }
-                catList.setItemList(itemLists);
-                categoriesList.add(catList);
+                categoryValues = categoryValues + categoryEntities.get(j).getCategory_name() + ",";
+                categoryValues = categoryValues.replace(",$", "");
             }
-            restaurantDetailsResponses.add(
-                    new RestaurantDetailsResponse()
+            String arr[] = categoryValues.split(",");
+            Arrays.sort(arr);
+            Arrays.toString(arr);
+            String joinedSortedCategoriesValues = String.join(",",arr);
+            restaurantLists.add(
+                    new RestaurantList()
                             .id(UUID.fromString(restaurantEntities.get(i).getUuid()))
                             .restaurantName(restaurantEntities.get(i).getRestaurant_name())
                             .photoURL(restaurantEntities.get(i).getPhoto_url())
@@ -189,10 +159,11 @@ public class RestaurantController {
                                             .stateName(restaurantEntities.get(i).getAddressEntity().getStateEntity().getState_name())
                                     )
                             )
-                            .categories(categoriesList)
+                            .categories(joinedSortedCategoriesValues)
             );
         }
-        return new ResponseEntity<ArrayList>((ArrayList)restaurantDetailsResponses, HttpStatus.OK);
+        restaurantListResponse.setRestaurants(restaurantLists);
+        return new ResponseEntity<RestaurantListResponse>(restaurantListResponse, HttpStatus.OK);
     }
 
     @CrossOrigin

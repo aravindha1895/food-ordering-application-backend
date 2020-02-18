@@ -27,6 +27,19 @@ public class OrderDAO {
 		}
 	}
 
+	public CouponEntity getCouponById(String uuid) {
+		try {
+			return entityManager.createNamedQuery("getCouponById", CouponEntity.class).setParameter("couponUuid", uuid).getSingleResult();
+		} catch(NoResultException nre) {
+			return null;
+		}
+	}
+
+	public OrderEntity postOrder(OrderEntity orderEntity) {
+		entityManager.persist(orderEntity);
+		return orderEntity;
+	}
+
     public CouponEntity getCouponDetailsById(int id) {
         try {
             return entityManager.createNamedQuery("getCouponDetailById", CouponEntity.class)
@@ -36,14 +49,18 @@ public class OrderDAO {
         }
     }
 
-	public List<OrderEntity> fetchOrdersByCustomer(long customerId){
+	public List<OrderEntity> fetchOrdersByCustomer(long customerId) {
 		try {
 			return entityManager.createNamedQuery("fetchAllOrders", OrderEntity.class)
 					.setParameter("customerId", customerId).getResultList();
 		} catch (NoResultException nre) {
 			return null;
 		}
+	}
 
+	public OrderItemEntity postOrderItem(OrderItemEntity orderItemEntity) {
+		entityManager.persist(orderItemEntity);
+		return orderItemEntity;
 	}
 
 	public OrderItemEntity fetchItemDetails(String orderId){
