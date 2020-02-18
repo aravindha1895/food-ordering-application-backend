@@ -7,12 +7,11 @@ import javax.validation.constraints.Size;
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
 
-@NamedQueries(
-        {
-                @NamedQuery(name = "getOrdersByRestaurantId", query = "select o from OrderEntity o where  o.restaurantEntity=:restEntity")
-        }
-)
-
+@NamedQueries({
+        @NamedQuery(name = "fetchAllOrders", query = "select o from OrderEntity o where o.customerEntity=:customerId"),
+        @NamedQuery(name = "fetchOrderByAddress", query = "select o from OrderEntity o where o.addressEntity=:addressId"),
+        @NamedQuery(name = "getOrdersByRestaurantId", query = "select o from OrderEntity o where  o.restaurantEntity=:restEntity")
+})
 
 @Entity
 @Table(name = "orders")

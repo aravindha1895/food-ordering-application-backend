@@ -3,6 +3,9 @@ package com.upgrad.FoodOrderingApp.service.businness;
 import com.upgrad.FoodOrderingApp.service.dao.AddressDAO;
 import com.upgrad.FoodOrderingApp.service.dao.StateDAO;
 import com.upgrad.FoodOrderingApp.service.entity.AddressEntity;
+import com.upgrad.FoodOrderingApp.service.dao.OrderDAO;
+import com.upgrad.FoodOrderingApp.service.entity.CustomerEntity;
+import com.upgrad.FoodOrderingApp.service.entity.OrderEntity;
 import com.upgrad.FoodOrderingApp.service.entity.StateEntity;
 import com.upgrad.FoodOrderingApp.service.exception.AddressNotFoundException;
 import com.upgrad.FoodOrderingApp.service.exception.SaveAddressException;
@@ -10,7 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-
+import java.util.List;
 import java.util.regex.Pattern;
 
 @Service
@@ -21,6 +24,10 @@ public class AddressService {
 
     @Autowired
     StateDAO stateDAO;
+
+    @Autowired
+    OrderDAO orderDAO;
+
 
     @Transactional(propagation = Propagation.REQUIRED)
     public AddressEntity saveAddress(AddressEntity address, String uuId) throws SaveAddressException {
@@ -41,9 +48,6 @@ public class AddressService {
 
     }
 
-    /*public List<AddressEntity> fetchAllAddressByCustomerId(String customerId){
-        return addressDAO.getAllStates(customerId);
-    }*/
 
     public AddressEntity deleteAddressById(String addressId) throws AddressNotFoundException {
         if(addressId.isEmpty())
@@ -57,8 +61,18 @@ public class AddressService {
                     "No address by this id");
 
 
+        /**
+         * id this address is not used in any orders
+         *
+         * delete the address
+         *
+         * else archive it
+         * */
 
-        return addressDAO.archiveAddressById(addressId);
+        List<OrderEntity> ordersByAddressId = orderDAO.fetchOrderByAddress(addressId);
+        if(ordersByAddressId.size()>0)
+            return addressDAO.archiveAddressById(addressId);
+        return addressDAO.deleteAddressById(addressId);
     }
 
     public AddressEntity getAddressById(String addressId){
@@ -87,4 +101,27 @@ public class AddressService {
         return stateDAO.getStateById(uuId);
     }
 
+
+    public StateEntity getStateByUUID(String testUUID) {
+        return stateDAO.getStateById(testUUID);
+    }
+
+    public AddressEntity getAddressByUUID(String s, CustomerEntity customerEntity) {
+        return addressDAO.getAddressById(s);
+    }
+
+    public AddressEntity deleteAddress(AddressEntity addressEntity) {
+        List<OrderEntity> ordersByAddressId = orderDAO.fetchOrderByAddress(addressEntity.getUuid());
+        if(ordersByAddressId.size()>0)
+            return addressDAO.archiveAddressById(addressEntity.getUuid());
+        return addressDAO.deleteAddressById(addressEntity.getUuid());
+    }
+
+    public List<AddressEntity> getAllAddress(CustomerEntity customerEntity) {
+        return customerEntity.getAddress();
+    }
+
+    public List<StateEntity> getAllStates() {
+        return stateDAO.getAllStates();
+    }
 }

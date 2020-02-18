@@ -1,12 +1,9 @@
 package com.upgrad.FoodOrderingApp.service.businness;
-
 import com.upgrad.FoodOrderingApp.service.dao.*;
 import com.upgrad.FoodOrderingApp.service.entity.*;
-
 import com.upgrad.FoodOrderingApp.service.exception.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,10 +28,14 @@ public class OrderService {
 	@Autowired
 	AddressDAO addressDAO;
 
+	@Autowired
+	OrderDAO orderDAO;
+
+
 	public CouponEntity getCouponDetailByName(String name) throws CouponNotFoundException, AuthorizationFailedException {
 		if (name.trim().equals(""))
 			throw new CouponNotFoundException("CPF-002","Coupon name field should not be empty");
-		CouponEntity couponEntity = couponDAO.getCouponDetailsByName(name);
+		CouponEntity couponEntity = orderDAO.getCouponDetailsByName(name);
 		if(couponEntity == null)
 			throw new CouponNotFoundException("CPF-001","No coupon by this name");
 		return couponEntity;
@@ -76,4 +77,17 @@ public class OrderService {
 	public OrderItemEntity postOrderItem(OrderItemEntity orderItemEntity) {
 		return couponDAO.postOrderItem(orderItemEntity);
 	}
+
+    public CouponEntity getCouponDetailsById(int id) throws CouponNotFoundException, AuthorizationFailedException {
+       return orderDAO.getCouponDetailsById(id);
+    }
+
+	public List<OrderEntity> retrieveAllOrders(CustomerEntity customer){
+	    return orderDAO.fetchOrdersByCustomer(customer.getId());
+    }
+
+    public OrderItemEntity fetchItemDetails(String orderId){
+	    return orderDAO.fetchItemDetails(orderId);
+    }
+
 }

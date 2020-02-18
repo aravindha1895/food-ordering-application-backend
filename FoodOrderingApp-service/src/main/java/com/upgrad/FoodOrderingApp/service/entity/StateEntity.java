@@ -4,6 +4,11 @@ import javax.persistence.*;
 import javax.validation.constraints.Size;
 import java.util.UUID;
 
+@NamedQueries({
+        @NamedQuery(name = "getAllStates", query = "select s from StateEntity s"),
+        @NamedQuery(name = "getStateById", query = "select s from StateEntity s where s.uuid=:stateuuid")
+})
+
 @Entity
 @Table(name = "state")
 public class StateEntity {
@@ -19,6 +24,13 @@ public class StateEntity {
     @Column(name = "STATE_NAME")
     @Size(max = 30)
     private String state_name;
+
+    public StateEntity(String stateUuid, String stateName) {
+        this.uuid = UUID.fromString(stateUuid);
+        this.state_name = stateName;
+    }
+
+    public StateEntity(){}
 
     public Integer getId() {
         return id;
