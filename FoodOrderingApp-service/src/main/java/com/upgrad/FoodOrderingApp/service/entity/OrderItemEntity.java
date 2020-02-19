@@ -3,7 +3,7 @@ package com.upgrad.FoodOrderingApp.service.entity;
 import javax.persistence.*;
 
 @NamedQueries({
-        @NamedQuery(name = "fetchItemDetails", query = "select o from OrderItemEntity o where o.orderEntity=:orderId")
+        @NamedQuery(name = "fetchItemDetails", query = "select o from OrderItemEntity o where o.orderEntity=:orderEntity")
 })
 
 @Entity

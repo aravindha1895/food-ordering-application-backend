@@ -2,7 +2,6 @@ package com.upgrad.FoodOrderingApp.service.entity;
 
 import javax.persistence.*;
 import javax.validation.constraints.Size;
-import java.util.UUID;
 
 @NamedQueries({
         @NamedQuery(name = "getAllStates", query = "select s from StateEntity s"),
@@ -19,16 +18,16 @@ public class StateEntity {
 
     @Column(name = "UUID")
     @Size(max = 200)
-    private UUID uuid;
+    private String uuid;
 
     @Column(name = "STATE_NAME")
     @Size(max = 30)
     private String state_name;
 
-    public StateEntity(String stateUuid, String stateName) {
-        this.uuid = UUID.fromString(stateUuid);
-        this.state_name = stateName;
-    }
+//    public StateEntity(String stateUuid, String stateName) {
+//        this.uuid = UUID.fromString(stateUuid);
+//        this.state_name = stateName;
+//    }
 
     public StateEntity(){}
 
@@ -40,11 +39,11 @@ public class StateEntity {
         this.id = id;
     }
 
-    public UUID getUuid() {
+    public String getUuid() {
         return uuid;
     }
 
-    public void setUuid(UUID uuid) {
+    public void setUuid(String uuid) {
         this.uuid = uuid;
     }
 
