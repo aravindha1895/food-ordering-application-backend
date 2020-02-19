@@ -114,7 +114,7 @@ public class AddressController {
                 match = true;
             }
 
-            if(match)
+            if(!match)
                 throw new AddressNotFoundException("ATHR-004",
                         "You are not authorized to view/update/delete any one else's address");
 
