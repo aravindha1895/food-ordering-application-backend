@@ -18,7 +18,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -61,11 +60,10 @@ public class AddressController {
         String stateUuid = saveAddressRequest.getStateUuid();
 
         AddressEntity savedAddress = addressService.saveAddress(newAddress, stateUuid, bearerToken);
-        List<AddressEntity> addressEntities = new ArrayList<>();
-        addressEntities.add(savedAddress);
+
         CustomerEntity customerEntity = customerService.getCustomerByToken(bearerToken);
-        customerEntity.setAddress(addressEntities);
-        customerService.updateCustomer(customerEntity, bearerToken);
+
+        addressService.addEntrytoCustomerAddress(customerEntity, savedAddress);
         return new ResponseEntity<SaveAddressResponse>(
                 new SaveAddressResponse().id(savedAddress.getUuid()).
                         status("ADDRESS SUCCESSFULLY REGISTERED"),
@@ -89,6 +87,7 @@ public class AddressController {
         AddressListResponse response = new AddressListResponse();
         for(AddressEntity addressEntity : customerEntity.getAddress()){
             response.addAddressesItem(new AddressList().
+                    id(UUID.fromString(addressEntity.getUuid())).
                     city(addressEntity.getCity()).
                     flatBuildingName(addressEntity.getFlat_buil_number()).
                     locality(addressEntity.getLocality()).

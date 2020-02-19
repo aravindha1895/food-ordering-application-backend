@@ -1,6 +1,7 @@
 package com.upgrad.FoodOrderingApp.service.dao;
 
 import com.upgrad.FoodOrderingApp.service.entity.AddressEntity;
+import com.upgrad.FoodOrderingApp.service.entity.CustomerAddressEntity;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
@@ -30,4 +31,8 @@ public class AddressDAO {
         return entityManager.createNamedQuery("getAddressById", AddressEntity.class).setParameter("addressuuid", addressId).getSingleResult();
     }
 
+    public CustomerAddressEntity addEntrytoCustomerAddress(CustomerAddressEntity customerAddressEntity) {
+        entityManager.persist(customerAddressEntity);
+        return customerAddressEntity;
+    }
 }

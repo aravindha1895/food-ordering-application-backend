@@ -133,4 +133,12 @@ public class AddressService {
     public List<StateEntity> getAllStates() {
         return stateDAO.getAllStates();
     }
+
+    @Transactional(propagation = Propagation.REQUIRED)
+    public CustomerAddressEntity addEntrytoCustomerAddress(CustomerEntity customerEntity, AddressEntity addressEntity) {
+        CustomerAddressEntity customerAddressEntity = new CustomerAddressEntity();
+        customerAddressEntity.setAddress(addressEntity);
+        customerAddressEntity.setCustomer(customerEntity);
+        return addressDAO.addEntrytoCustomerAddress(customerAddressEntity);
+    }
 }
