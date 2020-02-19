@@ -9,7 +9,9 @@ import com.upgrad.FoodOrderingApp.service.entity.AddressEntity;
 import com.upgrad.FoodOrderingApp.service.entity.CustomerEntity;
 import com.upgrad.FoodOrderingApp.service.entity.StateEntity;
 import com.upgrad.FoodOrderingApp.service.exception.AddressNotFoundException;
+import com.upgrad.FoodOrderingApp.service.exception.AuthorizationFailedException;
 import com.upgrad.FoodOrderingApp.service.exception.SaveAddressException;
+import com.upgrad.FoodOrderingApp.service.exception.UpdateCustomerException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -32,11 +34,9 @@ public class AddressController {
     CustomerService customerService;
 
     @CrossOrigin
-    @PostMapping(value = "/address", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE,
+    @RequestMapping(method = RequestMethod.POST,value = "/address", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE,
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public @ResponseBody ResponseEntity<SaveAddressResponse> signUpCustomer(
-            @RequestHeader("authorization") final String accessToken,
-            @RequestBody SaveAddressRequest saveAddressRequest) throws SaveAddressException {
+    public ResponseEntity<SaveAddressResponse> postAddress(@RequestHeader("authorization") final String accessToken, @RequestBody SaveAddressRequest saveAddressRequest) throws SaveAddressException, AuthorizationFailedException, UpdateCustomerException {
 
         String bearerToken = null;
         try {
@@ -45,9 +45,9 @@ public class AddressController {
             bearerToken = accessToken;
         }
 
-        if(Validators.checkForEmptyEntityField(saveAddressRequest))
-            throw new SaveAddressException("SAR-001",
-                    "No field can be empty");
+        if(Validators.checkForEmptyEntityField(saveAddressRequest)) {
+            throw new SaveAddressException("SAR-001", "No field can be empty");
+        }
 
         AddressEntity newAddress = new AddressEntity();
         newAddress.setCity(saveAddressRequest.getCity());
@@ -55,9 +55,15 @@ public class AddressController {
         newAddress.setLocality(saveAddressRequest.getLocality());
         newAddress.setPincode(saveAddressRequest.getPincode());
         newAddress.setActive(1);
+        newAddress.setUuid(UUID.randomUUID().toString());
 
-        AddressEntity savedAddress = addressService.saveAddress(newAddress, saveAddressRequest.getStateUuid());
+        String stateUuid = saveAddressRequest.getStateUuid();
 
+        AddressEntity savedAddress = addressService.saveAddress(newAddress, stateUuid, bearerToken);
+
+        CustomerEntity customerEntity = customerService.getCustomerByToken(bearerToken);
+
+        addressService.addEntrytoCustomerAddress(customerEntity, savedAddress);
         return new ResponseEntity<SaveAddressResponse>(
                 new SaveAddressResponse().id(savedAddress.getUuid()).
                         status("ADDRESS SUCCESSFULLY REGISTERED"),
@@ -81,6 +87,7 @@ public class AddressController {
         AddressListResponse response = new AddressListResponse();
         for(AddressEntity addressEntity : customerEntity.getAddress()){
             response.addAddressesItem(new AddressList().
+                    id(UUID.fromString(addressEntity.getUuid())).
                     city(addressEntity.getCity()).
                     flatBuildingName(addressEntity.getFlat_buil_number()).
                     locality(addressEntity.getLocality()).
@@ -88,7 +95,7 @@ public class AddressController {
                     pincode(addressEntity.getPincode()).
                     state(new AddressListState().
                             stateName(addressEntity.getStateEntity().getState_name()).
-                            id(addressEntity.getStateEntity().getUuid())));
+                            id(UUID.fromString(addressEntity.getStateEntity().getUuid()))));
         }
 
         return new ResponseEntity<AddressListResponse>(response,HttpStatus.OK);
@@ -132,7 +139,7 @@ public class AddressController {
         StatesListResponse response = new StatesListResponse();
         for(StateEntity stateEntity: stateEntities) {
             response.addStatesItem(new StatesList()
-                    .id(stateEntity.getUuid())
+                    .id(UUID.fromString(stateEntity.getUuid()))
                     .stateName(stateEntity.getState_name()));
         }
         return new ResponseEntity<StatesListResponse>(response,HttpStatus.OK);

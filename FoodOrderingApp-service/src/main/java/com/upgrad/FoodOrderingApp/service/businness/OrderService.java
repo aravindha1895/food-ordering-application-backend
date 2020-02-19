@@ -82,12 +82,21 @@ public class OrderService {
        return orderDAO.getCouponDetailsById(id);
     }
 
-	public List<OrderEntity> retrieveAllOrders(CustomerEntity customer){
-	    return orderDAO.fetchOrdersByCustomer(customer.getId());
+	public List<OrderEntity> retrieveAllOrders(CustomerEntity customerEntity, String accessToken) throws AuthorizationFailedException {
+		CustomerAuthTokenEntity customerAuthTokenEntity = customerDAO.getUserAuthToken(accessToken);
+		if(customerAuthTokenEntity == null) {
+			throw new AuthorizationFailedException("ATHR-001","Customer is not Logged in.");
+		} else if(customerAuthTokenEntity.getLogoutAt() != null) {
+			throw new AuthorizationFailedException("ATHR-002","Customer is logged out. Log in again to access this endpoint.");
+		} else if(customerAuthTokenEntity.getExpiresAt().isBefore(ZonedDateTime.now())) {
+			throw new AuthorizationFailedException("ATHR-003", "Your session is expired. Log in again to access this endpoint.");
+		} else {
+			return orderDAO.fetchOrdersByCustomer(customerEntity);
+		}
     }
 
-    public OrderItemEntity fetchItemDetails(String orderId){
-	    return orderDAO.fetchItemDetails(orderId);
+    public OrderItemEntity fetchItemDetails(OrderEntity orderEntity){
+	    return orderDAO.fetchItemDetails(orderEntity);
     }
 
 }

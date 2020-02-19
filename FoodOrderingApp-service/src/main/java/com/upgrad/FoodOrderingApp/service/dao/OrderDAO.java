@@ -1,15 +1,11 @@
 package com.upgrad.FoodOrderingApp.service.dao;
 
+import com.upgrad.FoodOrderingApp.service.entity.*;
+import org.springframework.stereotype.Repository;
+
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
-
-import com.upgrad.FoodOrderingApp.service.entity.OrderEntity;
-import com.upgrad.FoodOrderingApp.service.entity.OrderItemEntity;
-import org.springframework.stereotype.Repository;
-
-import com.upgrad.FoodOrderingApp.service.entity.CouponEntity;
-
 import java.util.List;
 
 @Repository
@@ -49,10 +45,10 @@ public class OrderDAO {
         }
     }
 
-	public List<OrderEntity> fetchOrdersByCustomer(long customerId) {
+	public List<OrderEntity> fetchOrdersByCustomer(CustomerEntity customerEntity) {
 		try {
 			return entityManager.createNamedQuery("fetchAllOrders", OrderEntity.class)
-					.setParameter("customerId", customerId).getResultList();
+					.setParameter("custEntity", customerEntity).getResultList();
 		} catch (NoResultException nre) {
 			return null;
 		}
@@ -63,19 +59,19 @@ public class OrderDAO {
 		return orderItemEntity;
 	}
 
-	public OrderItemEntity fetchItemDetails(String orderId){
+	public OrderItemEntity fetchItemDetails(OrderEntity orderEntity){
         try {
             return entityManager.createNamedQuery("fetchItemDetails", OrderItemEntity.class)
-                    .setParameter("order_id", orderId).getSingleResult();
+                    .setParameter("orderEntity", orderEntity).getSingleResult();
         } catch (NoResultException nre) {
             return null;
         }
     }
 
-    public List<OrderEntity> fetchOrderByAddress(String addressId){
+    public List<OrderEntity> fetchOrderByAddress(AddressEntity addressEntity){
         try {
             return entityManager.createNamedQuery("fetchOrderByAddress", OrderEntity.class)
-                    .setParameter("address_id", addressId).getResultList();
+                    .setParameter("addrEntity", addressEntity).getResultList();
         } catch (NoResultException nre) {
             return null;
         }

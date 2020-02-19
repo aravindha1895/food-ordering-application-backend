@@ -1,7 +1,5 @@
 package com.upgrad.FoodOrderingApp.service.entity;
 
-import org.hibernate.annotations.ManyToAny;
-
 import javax.persistence.*;
 import javax.validation.constraints.Size;
 import java.math.BigDecimal;
@@ -9,8 +7,8 @@ import java.time.ZonedDateTime;
 import java.util.List;
 
 @NamedQueries({
-        @NamedQuery(name = "fetchAllOrders", query = "select o from OrderEntity o where o.customerEntity=:customerId"),
-        @NamedQuery(name = "fetchOrderByAddress", query = "select o from OrderEntity o where o.addressEntity=:addressId"),
+        @NamedQuery(name = "fetchAllOrders", query = "select o from OrderEntity o where o.customerEntity=:custEntity"),
+        @NamedQuery(name = "fetchOrderByAddress", query = "select o from OrderEntity o where o.addressEntity=:addrEntity"),
         @NamedQuery(name = "getOrdersByRestaurantId", query = "select o from OrderEntity o where  o.restaurantEntity=:restEntity")
 })
 

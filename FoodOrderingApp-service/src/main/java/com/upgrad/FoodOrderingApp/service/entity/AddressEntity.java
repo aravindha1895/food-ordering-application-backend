@@ -44,14 +44,14 @@ public class AddressEntity {
     @Column(name = "ACTIVE")
     private int active;
 
-    @OneToOne(mappedBy = "addressEntity")
-    private RestaurantEntity restaurantEntity;
+//    @OneToOne(mappedBy = "addressEntity")
+//    private RestaurantEntity restaurantEntity;
 
     @ManyToOne
     @JoinColumn(name = "STATE_ID")
     private StateEntity stateEntity;
 
-    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToMany(mappedBy = "address")
     private List<CustomerEntity> customer = new ArrayList<CustomerEntity>();
 
     public List<CustomerEntity> getCustomer() {
@@ -126,17 +126,11 @@ public class AddressEntity {
         this.active = active;
     }
 
-    public RestaurantEntity getRestaurantEntity() {
-        return restaurantEntity;
-    }
-
-    public void setRestaurantEntity(RestaurantEntity restaurantEntity) {
-        this.restaurantEntity = restaurantEntity;
-    }
-
-    public void setFlatBuilNo(String flatBuildNo) {
-    }
-
-    public void setState(StateEntity state) {
-    }
+//    public RestaurantEntity getRestaurantEntity() {
+//        return restaurantEntity;
+//    }
+//
+//    public void setRestaurantEntity(RestaurantEntity restaurantEntity) {
+//        this.restaurantEntity = restaurantEntity;
+//    }
 }

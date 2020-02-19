@@ -1,27 +1,22 @@
 package com.upgrad.FoodOrderingApp.api.controller;
 
-import java.time.ZonedDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
-import com.upgrad.FoodOrderingApp.api.model.ItemQuantity;
-import com.upgrad.FoodOrderingApp.service.businness.ItemService;
-import com.upgrad.FoodOrderingApp.service.entity.*;
-import com.upgrad.FoodOrderingApp.service.exception.*;
 import com.upgrad.FoodOrderingApp.api.model.*;
 import com.upgrad.FoodOrderingApp.service.businness.AddressService;
 import com.upgrad.FoodOrderingApp.service.businness.CustomerService;
+import com.upgrad.FoodOrderingApp.service.businness.ItemService;
+import com.upgrad.FoodOrderingApp.service.businness.OrderService;
+import com.upgrad.FoodOrderingApp.service.entity.*;
+import com.upgrad.FoodOrderingApp.service.exception.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import com.upgrad.FoodOrderingApp.api.model.CouponDetailsResponse;
-import com.upgrad.FoodOrderingApp.api.model.SaveOrderRequest;
-import com.upgrad.FoodOrderingApp.api.model.SaveOrderResponse;
-import com.upgrad.FoodOrderingApp.service.businness.OrderService;
-import com.upgrad.FoodOrderingApp.service.exception.AuthorizationFailedException;
-import com.upgrad.FoodOrderingApp.service.exception.CouponNotFoundException;
+
+import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 
 @RestController
@@ -51,8 +46,8 @@ public class OrderController {
 
 	@CrossOrigin
 	@GetMapping(value="/order",produces=MediaType.APPLICATION_JSON_UTF8_VALUE)
-	public @ResponseBody ResponseEntity<OrderList> retrieveAllOrders(
-			@RequestHeader("authorization") final String accessToken){
+	public @ResponseBody ResponseEntity<ArrayList> retrieveAllOrders(
+			@RequestHeader("authorization") final String accessToken) throws AuthorizationFailedException {
 
 		String bearerToken = null;
 		try {
@@ -62,11 +57,12 @@ public class OrderController {
 		}
 
 		CustomerEntity customer = customerService.getCustomerByToken(bearerToken);
-		List<OrderEntity> orders = orderService.retrieveAllOrders(customer);
+		List<OrderEntity> orders = orderService.retrieveAllOrders(customer, bearerToken);
+		List<OrderList> orderLists = new ArrayList<>();
 
-		OrderList orderList =  new OrderList();
         List<ItemQuantityResponse> items = new ArrayList<>();
 		for(OrderEntity orderEntity: orders) {
+            OrderList orderList =  new OrderList();
 			orderList.id(UUID.fromString(orderEntity.getUuid()));
 			orderList.bill(orderEntity.getBill());
 
@@ -109,7 +105,7 @@ public class OrderController {
                     city(orderEntity.getAddressEntity().getCity()).
                     pincode(orderEntity.getAddressEntity().getPincode()).
                     state(new OrderListAddressState().
-                            id(orderEntity.getAddressEntity().getStateEntity().getUuid()).
+                            id(UUID.fromString(orderEntity.getAddressEntity().getStateEntity().getUuid())).
                             stateName(orderEntity.getAddressEntity().getStateEntity().getState_name())));
 
             /**
@@ -118,7 +114,7 @@ public class OrderController {
             ItemQuantityResponse itemQuantityResponse = new ItemQuantityResponse();
 
             //fetch item details for every order from order item entity
-            OrderItemEntity orderItemEntity = orderService.fetchItemDetails(orderEntity.getUuid());
+            OrderItemEntity orderItemEntity = orderService.fetchItemDetails(orderEntity);
             itemQuantityResponse.setPrice(orderItemEntity.getPrice());
             itemQuantityResponse.setQuantity(orderItemEntity.getQuantity());
 
@@ -127,14 +123,13 @@ public class OrderController {
                     id(UUID.fromString(orderItemEntity.getItemEntity().getUuid())).
                     itemName(orderItemEntity.getItemEntity().getItem_name()).
                     itemPrice(orderItemEntity.getItemEntity().getPrice()).
-                    type(ItemQuantityResponseItem.TypeEnum.fromValue(orderItemEntity.getItemEntity().getType())));
-
+                    type(ItemQuantityResponseItem.TypeEnum.values()[Integer.parseInt(orderItemEntity.getItemEntity().getType())]));
 
             items.add(itemQuantityResponse);
             orderList.itemQuantities(items);
-
+            orderLists.add(orderList);
 		}
-		return new ResponseEntity<OrderList>(orderList,HttpStatus.OK);
+		return new ResponseEntity<ArrayList>((ArrayList)orderLists,HttpStatus.OK);
 	}
 	
 	@CrossOrigin
