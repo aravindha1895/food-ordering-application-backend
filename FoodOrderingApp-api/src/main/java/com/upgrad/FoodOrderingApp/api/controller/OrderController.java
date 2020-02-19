@@ -35,7 +35,7 @@ public class OrderController {
 	
 	@CrossOrigin
 	@RequestMapping(method=RequestMethod.GET,value="/order/coupon/{coupon_name}",produces=MediaType.APPLICATION_JSON_UTF8_VALUE)
-	public ResponseEntity<CouponDetailsResponse> getCouponByName(@PathVariable("coupon_name") String couponName) throws CouponNotFoundException, AuthorizationFailedException{
+	public ResponseEntity<CouponDetailsResponse> getCouponByName(@PathVariable("coupon_name") String couponName, @RequestHeader("authorization") final String accessToken) throws CouponNotFoundException, AuthorizationFailedException{
 		CouponEntity couponEntity =  orderService.getCouponDetailByName(couponName);
 		CouponDetailsResponse couponDetailsResponse= new CouponDetailsResponse();
 		couponDetailsResponse.setCouponName(couponEntity.getCouponName());
