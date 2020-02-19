@@ -70,4 +70,10 @@ public class RestExceptionHandler {
 		return new ResponseEntity<ErrorResponse>(new ErrorResponse().code(exc.getCode()).message(exc.getErrorMessage()),
 				HttpStatus.BAD_REQUEST);
     }
+
+	@ExceptionHandler(AddressNotFoundException.class)
+	public ResponseEntity<ErrorResponse> addressNotFoundException(AddressNotFoundException exc, WebRequest webRequest) {
+		return new ResponseEntity<ErrorResponse>(new ErrorResponse().code(exc.getCode()).message(exc.getErrorMessage()),
+				HttpStatus.NOT_FOUND);
+    }
 }

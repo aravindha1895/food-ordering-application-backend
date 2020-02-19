@@ -17,6 +17,8 @@ import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.regex.Pattern;
 
+import javax.persistence.NoResultException;
+
 @Service
 public class AddressService {
 
@@ -57,7 +59,7 @@ public class AddressService {
 
     }
 
-
+    @Transactional(propagation = Propagation.REQUIRED)
     public AddressEntity deleteAddressById(String addressId) throws AddressNotFoundException {
         if(addressId.isEmpty())
             throw new AddressNotFoundException("ANF-005",
@@ -79,13 +81,25 @@ public class AddressService {
          * */
 
         List<OrderEntity> ordersByAddressId = orderDAO.fetchOrderByAddress(addressEntity);
-        if(ordersByAddressId.size()>0)
-            return addressDAO.archiveAddressById(addressId);
-        return addressDAO.deleteAddressById(addressId);
+       // ordersByAddressId.add(new OrderEntity());
+        if(ordersByAddressId.size()>0) {
+        	addressEntity.setActive(0);
+        	 return addressDAO.archiveAddressById(addressEntity);
+        }
+        else {
+        	  addressDAO.deleteAddressById(addressEntity);
+        	  return addressEntity;
+        	  
+        }
+      
     }
 
     public AddressEntity getAddressById(String addressId){
-        return addressDAO.getAddressById(addressId);
+    	try {
+    		return addressDAO.getAddressById(addressId);
+    	} catch (NoResultException nre) {
+    		return null;
+    	}
     }
 
 
@@ -115,15 +129,12 @@ public class AddressService {
         return stateDAO.getStateById(testUUID);
     }
 
-    public AddressEntity getAddressByUUID(String s, CustomerEntity customerEntity) {
+    public AddressEntity getAddressByUUID(String s, CustomerEntity customerEntity) throws AddressNotFoundException {
         return addressDAO.getAddressById(s);
     }
 
-    public AddressEntity deleteAddress(AddressEntity addressEntity) {
-        List<OrderEntity> ordersByAddressId = orderDAO.fetchOrderByAddress(addressEntity);
-        if(ordersByAddressId.size()>0)
-            return addressDAO.archiveAddressById(addressEntity.getUuid());
-        return addressDAO.deleteAddressById(addressEntity.getUuid());
+    public AddressEntity deleteAddress(AddressEntity addressEntity) throws AddressNotFoundException {
+    	return deleteAddressById(addressEntity.getUuid());
     }
 
     public List<AddressEntity> getAllAddress(CustomerEntity customerEntity) {
@@ -133,6 +144,7 @@ public class AddressService {
     public List<StateEntity> getAllStates() {
         return stateDAO.getAllStates();
     }
+
 
     @Transactional(propagation = Propagation.REQUIRED)
     public CustomerAddressEntity addEntrytoCustomerAddress(CustomerEntity customerEntity, AddressEntity addressEntity) {

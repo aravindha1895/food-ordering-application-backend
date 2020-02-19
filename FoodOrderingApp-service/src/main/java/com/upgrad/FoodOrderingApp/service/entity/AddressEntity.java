@@ -2,6 +2,10 @@ package com.upgrad.FoodOrderingApp.service.entity;
 
 import javax.persistence.*;
 import javax.validation.constraints.Size;
+
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -47,11 +51,11 @@ public class AddressEntity {
 //    @OneToOne(mappedBy = "addressEntity")
 //    private RestaurantEntity restaurantEntity;
 
-    @ManyToOne
+    @ManyToOne(cascade=CascadeType.ALL)
     @JoinColumn(name = "STATE_ID")
     private StateEntity stateEntity;
 
-    @ManyToMany(mappedBy = "address")
+    @ManyToMany(mappedBy = "address" ,cascade=CascadeType.ALL)
     private List<CustomerEntity> customer = new ArrayList<CustomerEntity>();
 
     public List<CustomerEntity> getCustomer() {
