@@ -471,7 +471,7 @@ public class RestaurantControllerTest {
         final String stateId = UUID.randomUUID().toString();
         final StateEntity stateEntity = new StateEntity();
         stateEntity.setId(1);
-        stateEntity.setUuid(UUID.fromString(stateId));
+        stateEntity.setUuid(UUID.randomUUID().toString());
         stateEntity.setState_name("STATE_NAME");
         final String addressId = UUID.randomUUID().toString();
       //  final AddressEntity addressEntity = new AddressEntity(addressId, "a/b/c", "someLocality", "someCity", "100000", stateEntity);

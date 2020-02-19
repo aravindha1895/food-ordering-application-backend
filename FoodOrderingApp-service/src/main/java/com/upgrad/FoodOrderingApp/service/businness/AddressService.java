@@ -36,7 +36,7 @@ public class AddressService {
 
 
     @Transactional(propagation = Propagation.REQUIRED)
-    public AddressEntity saveAddress(AddressEntity address, String uuId, String authorization) throws SaveAddressException, AuthorizationFailedException {
+    public AddressEntity saveAddress(AddressEntity address, String uuId, String authorization) throws SaveAddressException,  AuthorizationFailedException {
         CustomerAuthTokenEntity customerAuthTokenEntity = customerDAO.getUserAuthToken(authorization);
         if(customerAuthTokenEntity == null) {
             throw new AuthorizationFailedException("ATHR-001","Customer is not Logged in.");
