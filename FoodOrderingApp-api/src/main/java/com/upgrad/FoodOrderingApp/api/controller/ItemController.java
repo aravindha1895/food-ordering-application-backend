@@ -24,10 +24,10 @@ public class ItemController {
     RestaurantService restaurantService;
 
     @CrossOrigin
-    @RequestMapping(method= RequestMethod.GET,value="/item/restaurant/{restaurant_id}}",produces= MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @RequestMapping(method= RequestMethod.GET,value="/item/restaurant/{restaurant_id}",produces= MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<ItemList> getTopFiveItemsByRestaurantId(@PathVariable("restaurant_id") String restaurant_id) throws RestaurantNotFoundException {
         RestaurantEntity restaurantEntity = restaurantService.getRestaurantById(restaurant_id);
-        List<OrderEntity> orderEntities = itemService.getOrdersByRestaurant(restaurantEntity);
+       itemService.getMostPopularItems(restaurant_id);
         return null;
     }
 
