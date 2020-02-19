@@ -11,12 +11,14 @@ import com.upgrad.FoodOrderingApp.service.entity.StateEntity;
 import com.upgrad.FoodOrderingApp.service.exception.AddressNotFoundException;
 import com.upgrad.FoodOrderingApp.service.exception.AuthorizationFailedException;
 import com.upgrad.FoodOrderingApp.service.exception.SaveAddressException;
+import com.upgrad.FoodOrderingApp.service.exception.UpdateCustomerException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -35,7 +37,7 @@ public class AddressController {
     @CrossOrigin
     @RequestMapping(method = RequestMethod.POST,value = "/address", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE,
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<SaveAddressResponse> postAddress(@RequestHeader("authorization") final String accessToken, @RequestBody SaveAddressRequest saveAddressRequest) throws SaveAddressException, AuthorizationFailedException {
+    public ResponseEntity<SaveAddressResponse> postAddress(@RequestHeader("authorization") final String accessToken, @RequestBody SaveAddressRequest saveAddressRequest) throws SaveAddressException, AuthorizationFailedException, UpdateCustomerException {
 
         String bearerToken = null;
         try {
@@ -59,7 +61,11 @@ public class AddressController {
         String stateUuid = saveAddressRequest.getStateUuid();
 
         AddressEntity savedAddress = addressService.saveAddress(newAddress, stateUuid, bearerToken);
-
+        List<AddressEntity> addressEntities = new ArrayList<>();
+        addressEntities.add(savedAddress);
+        CustomerEntity customerEntity = customerService.getCustomerByToken(bearerToken);
+        customerEntity.setAddress(addressEntities);
+        customerService.updateCustomer(customerEntity, bearerToken);
         return new ResponseEntity<SaveAddressResponse>(
                 new SaveAddressResponse().id(savedAddress.getUuid()).
                         status("ADDRESS SUCCESSFULLY REGISTERED"),

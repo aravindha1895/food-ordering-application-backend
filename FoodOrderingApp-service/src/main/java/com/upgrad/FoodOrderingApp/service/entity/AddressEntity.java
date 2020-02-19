@@ -51,7 +51,7 @@ public class AddressEntity {
     @JoinColumn(name = "STATE_ID")
     private StateEntity stateEntity;
 
-    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToMany(mappedBy = "address")
     private List<CustomerEntity> customer = new ArrayList<CustomerEntity>();
 
     public List<CustomerEntity> getCustomer() {
