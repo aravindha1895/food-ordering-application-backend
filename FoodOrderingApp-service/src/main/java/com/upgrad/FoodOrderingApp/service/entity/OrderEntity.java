@@ -4,6 +4,7 @@ import javax.persistence.*;
 import javax.validation.constraints.Size;
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
+import java.util.List;
 
 @NamedQueries({
         @NamedQuery(name = "fetchAllOrders", query = "select o from OrderEntity o where o.customerEntity=:custEntity"),
@@ -52,6 +53,10 @@ public class OrderEntity {
     @ManyToOne
     @JoinColumn(name = "ADDRESS_ID")
     private AddressEntity addressEntity;
+    
+    
+    @OneToMany(mappedBy="orderEntity")
+    private List<OrderItemEntity> orderItem;
 
     public int getId() {
         return id;
@@ -132,4 +137,13 @@ public class OrderEntity {
     public void setAddressEntity(AddressEntity addressEntity) {
         this.addressEntity = addressEntity;
     }
+
+	public List<OrderItemEntity> getOrderItem() {
+		return orderItem;
+	}
+
+	public void setOrderItem(List<OrderItemEntity> orderItem) {
+		this.orderItem = orderItem;
+	}
+    
 }
