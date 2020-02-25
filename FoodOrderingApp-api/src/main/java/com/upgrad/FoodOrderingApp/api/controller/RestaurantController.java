@@ -17,10 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @RestController
 @RequestMapping("/")
@@ -172,6 +169,7 @@ public class RestaurantController {
         RestaurantEntity restaurantEntity = restaurantService.getRestaurantById(restaurant_id);
 
         List<CategoryEntity> categoryEntities = restaurantEntity.getCategories();
+        Collections.sort(categoryEntities, CategoryEntity.CatNameComparator);
         List<CategoryList> categoriesList = new ArrayList<CategoryList>();
         for (int j=0; j < categoryEntities.size(); j++) {
             CategoryList catList = new CategoryList();
