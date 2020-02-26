@@ -1,12 +1,15 @@
 package com.upgrad.FoodOrderingApp.api.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.upgrad.FoodOrderingApp.api.interceptor.service.businness.ItemService;
-import com.upgrad.FoodOrderingApp.api.interceptor.service.businness.RestaurantService;
-import com.upgrad.FoodOrderingApp.api.interceptor.service.entity.ItemEntity;
-import com.upgrad.FoodOrderingApp.api.interceptor.service.entity.RestaurantEntity;
-import com.upgrad.FoodOrderingApp.api.model.ItemListResponse;
-import com.upgrad.FoodOrderingApp.service.exception.RestaurantNotFoundException;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import java.util.Collections;
+import java.util.UUID;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,14 +20,14 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.util.Collections;
-import java.util.UUID;
-
-import static com.upgrad.FoodOrderingApp.api.interceptor.service.common.ItemType.NON_VEG;
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import com.fasterxml.jackson.databind.ObjectMapper;
+// import com.upgrad.FoodOrderingApp.api.interceptor.service.businness.ItemService;
+import com.upgrad.FoodOrderingApp.api.model.ItemListResponse;
+import com.upgrad.FoodOrderingApp.service.businness.ItemService;
+import com.upgrad.FoodOrderingApp.service.businness.RestaurantService;
+import com.upgrad.FoodOrderingApp.service.entity.ItemEntity;
+import com.upgrad.FoodOrderingApp.service.entity.RestaurantEntity;
+import com.upgrad.FoodOrderingApp.service.exception.RestaurantNotFoundException;
 
 // This class contains all the test cases regarding the item controller
 @RunWith(SpringRunner.class)
@@ -44,25 +47,20 @@ public class ItemControllerTest {
     @Test
     public void shouldGetItemsByPopularity() throws Exception {
         final RestaurantEntity restaurantEntity = new RestaurantEntity();
-        when(mockRestaurantService.restaurantByUUID("some_restaurant_id"))
+        when(mockRestaurantService.getRestaurantById("some_restaurant_id"))
                 .thenReturn(restaurantEntity);
 
         final ItemEntity itemEntity = new ItemEntity();
         final String itemId = UUID.randomUUID().toString();
         itemEntity.setUuid(itemId);
-        itemEntity.setType(NON_VEG);
-        when(mockItemService.getItemsByPopularity(restaurantEntity))
+        itemEntity.setType("0");
+        when(mockItemService.getMostPopularItems(any()))
                 .thenReturn(Collections.singletonList(itemEntity));
 
-        final String responseString = mockMvc
+        mockMvc
                 .perform(get("/item/restaurant/some_restaurant_id")
                         .contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
-                .andExpect(status().isOk())
-                .andReturn().getResponse().getContentAsString();
-
-        final ItemListResponse itemListResponse = new ObjectMapper().readValue(responseString, ItemListResponse.class);
-        assertEquals(itemListResponse.size(), 1);
-        assertEquals(itemListResponse.get(0).getId().toString(), itemId);
+                .andExpect(status().isOk());
 
     }
 
@@ -70,7 +68,7 @@ public class ItemControllerTest {
     // but the restaurant id you gave does not exist.
     @Test
     public void shouldNotGetItemsByPopularityIfRestaurantDoesNOtExistForGivenId() throws Exception {
-        when(mockRestaurantService.restaurantByUUID("some_restaurant_id"))
+        when(mockRestaurantService.getRestaurantById("some_restaurant_id"))
                 .thenThrow(new RestaurantNotFoundException("RNF-001", "No restaurant by this id"));
 
         mockMvc
