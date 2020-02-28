@@ -3,6 +3,7 @@ package com.upgrad.FoodOrderingApp.service.entity;
 import javax.persistence.*;
 import javax.validation.constraints.Size;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 @Entity
@@ -71,4 +72,15 @@ public class CategoryEntity {
     public void setCategory_name(String category_name) {
         this.category_name = category_name;
     }
+
+    public static Comparator<CategoryEntity> CatNameComparator = new Comparator<CategoryEntity>() {
+
+        public int compare(CategoryEntity c1, CategoryEntity c2) {
+            String CatName1 = c1.getCategory_name().toUpperCase();
+            String CatName2 = c2.getCategory_name().toUpperCase();
+
+            //ascending order
+            return CatName1.compareTo(CatName2);
+        }};
+
 }
